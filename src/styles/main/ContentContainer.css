@@ -4,3 +4,25 @@
     overflow: hidden;
     padding: 16px;
 }
+
+.app-content__page {
+    height: 100%;
+    animation: app-content__enter 180ms ease-out;
+}
+
+@keyframes app-content__enter {
+    0% {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-content__page {
+        animation: none;
+    }
+}

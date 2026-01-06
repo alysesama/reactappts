@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useLocation } from "react-router-dom";
 import "@/styles/main/ContentContainer.css";
 
 export default function ContentContainer({
@@ -6,5 +7,16 @@ export default function ContentContainer({
 }: {
     children: ReactNode;
 }) {
-    return <div className="app-content">{children}</div>;
+    const location = useLocation();
+
+    return (
+        <div className="app-content">
+            <div
+                key={location.pathname}
+                className="app-content__page"
+            >
+                {children}
+            </div>
+        </div>
+    );
 }

@@ -1,8 +1,8 @@
 .github-panel--info {
     min-height: 0;
-    padding: 12px;
-    flex: 0 0 340px;
-    max-width: 380px;
+    padding: var(--gh-pad-panel-info);
+    flex: 0 0 var(--gh-panel-info-width);
+    max-width: var(--gh-panel-info-max-width);
 }
 
 .github-info {
@@ -17,10 +17,10 @@
 }
 
 .github-info__avatar img {
-    width: 160px;
-    height: 160px;
-    border-radius: 12px;
-    border: 2px solid rgba(148, 163, 184, 0.3);
+    width: var(--gh-avatar-size);
+    height: var(--gh-avatar-size);
+    border-radius: var(--gh-radius-panel);
+    border: 2px solid var(--gh-border-avatar);
 }
 
 .github-info__details {
@@ -37,26 +37,26 @@
 }
 
 .github-info__link {
-    color: #60a5fa;
+    color: var(--gh-link);
     text-decoration: none;
     transition: color 0.2s ease;
 }
 
 .github-info__link:hover {
-    color: #93c5fd;
+    color: var(--gh-link-hover);
     text-decoration: underline;
 }
 
 .github-info__username {
     margin: 0;
-    color: #94a3b8;
+    color: var(--gh-text-muted);
     font-size: 1rem;
 }
 
 .github-info__bio {
     margin: 0;
-    color: #cbd5e1;
-    font-size: 0.95rem;
+    color: var(--gh-text-soft);
+    font-size: var(--gh-font-input);
     line-height: 1.5;
     max-height: 6em;
     overflow: hidden;
@@ -76,13 +76,13 @@
 
 .github-stat__label {
     font-size: 0.85rem;
-    color: #94a3b8;
+    color: var(--gh-text-muted);
 }
 
 .github-stat__value {
     font-size: 1.2rem;
     font-weight: 700;
-    color: #e2e8f0;
+    color: var(--gh-text);
 }
 
 .github-info__extra {
@@ -90,7 +90,7 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    font-size: 0.85rem;
+    font-size: var(--gh-font-meta);
 }
 
 .github-info__row {
@@ -100,18 +100,18 @@
 
 .github-info__row-label {
     min-width: 110px;
-    color: #94a3b8;
+    color: var(--gh-text-muted);
 }
 
 .github-info__row-value {
-    color: #cbd5e1;
+    color: var(--gh-text-soft);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .github-info__row-value a {
-    color: #60a5fa;
+    color: var(--gh-link);
     text-decoration: none;
 }
 
@@ -124,7 +124,7 @@
         width: 100%;
         max-width: 100%;
         flex: 0 0 auto;
-        padding: 10px;
+        padding: var(--gh-pad-panel-info-compact);
     }
 
     .github-info {
@@ -134,8 +134,8 @@
     }
 
     .github-info__avatar img {
-        width: 96px;
-        height: 96px;
+        width: var(--gh-avatar-size-compact);
+        height: var(--gh-avatar-size-compact);
     }
 
     .github-info__details {

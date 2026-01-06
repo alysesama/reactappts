@@ -1,6 +1,6 @@
 .github-panel--repos {
     flex: 1 1 auto;
-    padding: 16px;
+    padding: var(--gh-pad-panel-repos);
     min-height: 0;
     display: flex;
     flex-direction: column;
@@ -17,7 +17,7 @@
     padding-left: 8px;
     font-size: 1.2rem;
     font-weight: 600;
-    color: #e2e8f0;
+    color: var(--gh-text);
 }
 
 .github-repos__header {
@@ -37,10 +37,10 @@
 .github-repos__sort-toggle {
     width: 36px;
     height: 36px;
-    border-radius: 8px;
-    border: 1px solid rgba(148, 163, 184, 0.4);
-    background: rgba(15, 23, 42, 0.9);
-    color: #e2e8f0;
+    border-radius: var(--gh-radius-control);
+    border: 1px solid var(--gh-border-control);
+    background: var(--gh-bg-control);
+    color: var(--gh-text);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -50,50 +50,50 @@
 }
 
 .github-repos__sort-toggle:hover {
-    border-color: rgba(59, 130, 246, 0.8);
-    color: #bfdbfe;
+    border-color: var(--gh-accent-strong);
+    color: var(--gh-link-hover);
 }
 
 .github-repos__sort-select {
     padding: 9px 11px;
-    border-radius: 8px;
-    border: 1px solid rgba(148, 163, 184, 0.4);
-    background: rgba(15, 23, 42, 0.9);
-    color: #e2e8f0;
-    font-size: 0.8rem;
+    border-radius: var(--gh-radius-control);
+    border: 1px solid var(--gh-border-control);
+    background: var(--gh-bg-control);
+    color: var(--gh-text);
+    font-size: var(--gh-font-small);
     cursor: pointer;
     transition: border-color 0.2s ease, color 0.2s ease;
 }
 
 .github-repos__sort-select:hover {
-    border-color: rgba(59, 130, 246, 0.8);
-    color: #bfdbfe;
+    border-color: var(--gh-accent-strong);
+    color: var(--gh-link-hover);
 }
 
 .github-repos__search-input {
     width: 360px;
     padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid rgba(148, 163, 184, 0.4);
-    background: rgba(15, 23, 42, 0.9);
-    color: #e2e8f0;
-    font-size: 0.8rem;
+    border-radius: var(--gh-radius-control);
+    border: 1px solid var(--gh-border-control);
+    background: var(--gh-bg-control);
+    color: var(--gh-text);
+    font-size: var(--gh-font-small);
     transition: border-color 0.2s ease;
 }
 
 .github-repos__search-input:focus {
     outline: none;
-    border-color: rgba(59, 130, 246, 0.5);
+    border-color: var(--gh-accent-focus);
 }
 
 .github-repos__search-input::placeholder {
-    color: rgba(148, 163, 184, 0.7);
+    color: var(--gh-placeholder-strong);
 }
 
 .github-repos__empty {
     text-align: center;
     padding: 40px;
-    color: #94a3b8;
+    color: var(--gh-text-muted);
     font-size: 0.95rem;
 }
 
@@ -107,21 +107,21 @@
 }
 
 .github-repos__grid::-webkit-scrollbar {
-    width: 8px;
+    width: var(--gh-scrollbar-size);
 }
 
 .github-repos__grid::-webkit-scrollbar-track {
-    background: rgba(15, 23, 42, 0.3);
-    border-radius: 4px;
+    background: var(--gh-scrollbar-track);
+    border-radius: var(--gh-scrollbar-radius);
 }
 
 .github-repos__grid::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.3);
-    border-radius: 4px;
+    background: var(--gh-scrollbar-thumb);
+    border-radius: var(--gh-scrollbar-radius);
 }
 
 .github-repos__grid::-webkit-scrollbar-thumb:hover {
-    background: rgba(148, 163, 184, 0.5);
+    background: var(--gh-scrollbar-thumb-hover);
 }
 
 @media (max-width: 1400px) {
@@ -136,7 +136,7 @@
 
 @media (max-width: 1200px) {
     .github-panel--repos {
-        padding: 12px;
+        padding: var(--gh-pad-panel-repos-compact);
     }
 
     .github-repos__grid {

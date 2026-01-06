@@ -1,7 +1,7 @@
 .github-repo-item {
-    background: rgba(2, 6, 23, 0.6);
-    border: 1px solid rgba(148, 163, 184, 0.15);
-    border-radius: 10px;
+    background: var(--gh-bg-surface);
+    border: 1px solid var(--gh-border-subtle);
+    border-radius: var(--gh-radius-card);
     padding: 16px;
     display: flex;
     flex-direction: column;
@@ -11,13 +11,13 @@
 }
 
 .github-repo-item:hover {
-    border-color: rgba(59, 130, 246, 0.4);
+    border-color: var(--gh-border-hover);
     transform: translateY(-2px);
 }
 
 .github-repo-item__name {
     font-weight: 600;
-    color: #60a5fa;
+    color: var(--gh-link);
     text-decoration: none;
     font-size: 0.95rem;
     transition: color 0.2s ease;
@@ -27,14 +27,14 @@
 }
 
 .github-repo-item__name:hover {
-    color: #93c5fd;
+    color: var(--gh-link-hover);
     text-decoration: underline;
 }
 
 .github-repo-item__description {
     margin: 0;
     font-size: 0.85rem;
-    color: #cbd5e1;
+    color: var(--gh-text-soft);
     line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 4;
@@ -56,21 +56,21 @@
 .github-repo-item__topic-pill {
     padding: 2px 8px;
     border-radius: 999px;
-    background: rgba(15, 23, 42, 0.9);
-    border: 1px solid rgba(148, 163, 184, 0.4);
+    background: var(--gh-bg-control);
+    border: 1px solid var(--gh-border-control);
     font-size: 0.7rem;
-    color: #e2e8f0;
+    color: var(--gh-text);
     text-decoration: none;
 }
 
 .github-repo-item__topic-pill:hover {
-    background: rgba(37, 99, 235, 0.2);
-    border-color: rgba(59, 130, 246, 0.6);
+    background: var(--gh-topic-hover-bg);
+    border-color: var(--gh-topic-hover-border);
 }
 
 .github-repo-item__topic-empty {
     font-size: 0.75rem;
-    color: #64748b;
+    color: var(--gh-text-dim);
 }
 
 .github-repo-item__meta {
@@ -78,7 +78,7 @@
     flex-direction: column;
     gap: 4px;
     font-size: 0.8rem;
-    color: #94a3b8;
+    color: var(--gh-text-muted);
     margin-top: auto;
 }
 
@@ -101,13 +101,13 @@
 }
 
 .github-repo-item__meta-link {
-    color: #cbd5e1;
+    color: var(--gh-text-soft);
     text-decoration: none;
     white-space: nowrap;
 }
 
 .github-repo-item__meta-link:hover {
-    color: #60a5fa;
+    color: var(--gh-link);
 }
 
 .github-repo-item__meta-text {

@@ -1,10 +1,11 @@
 import {
     useCallback,
     useEffect,
+    useLayoutEffect,
     useRef,
     useState,
 } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
     getPagePath,
     type AppPage,
@@ -17,7 +18,37 @@ export default function BottomNavbar({
     pages: AppPage[];
 }) {
     const navRef = useRef<HTMLElement | null>(null);
+    const location = useLocation();
     const [isScrollable, setIsScrollable] = useState(false);
+    const [activeIndicator, setActiveIndicator] = useState<{
+        x: number;
+        width: number;
+        visible: boolean;
+    }>({ x: 0, width: 0, visible: false });
+
+    const recomputeActiveIndicator = useCallback(() => {
+        const nav = navRef.current;
+        if (!nav) return;
+
+        const active = nav.querySelector(
+            ".app-nav__item.is-active"
+        ) as HTMLElement | null;
+
+        if (!active) {
+            setActiveIndicator((prev) =>
+                prev.visible
+                    ? { ...prev, visible: false }
+                    : prev
+            );
+            return;
+        }
+
+        setActiveIndicator({
+            x: active.offsetLeft,
+            width: active.offsetWidth,
+            visible: true,
+        });
+    }, []);
 
     const recomputeScrollable = useCallback(() => {
         const maxTabsBeforeScroll = 6;
@@ -35,7 +66,9 @@ export default function BottomNavbar({
             pages.length > maxTabsBeforeScroll ||
                 tabWidth < minTabWidthPx
         );
-    }, [pages.length]);
+
+        recomputeActiveIndicator();
+    }, [pages.length, recomputeActiveIndicator]);
 
     useEffect(() => {
         const id = window.setTimeout(() => {
@@ -61,6 +94,20 @@ export default function BottomNavbar({
         };
     }, [recomputeScrollable]);
 
+    useLayoutEffect(() => {
+        const id = window.requestAnimationFrame(() => {
+            recomputeActiveIndicator();
+        });
+
+        return () => {
+            window.cancelAnimationFrame(id);
+        };
+    }, [
+        location.pathname,
+        pages.length,
+        recomputeActiveIndicator,
+    ]);
+
     return (
         <nav
             ref={navRef}
@@ -68,6 +115,16 @@ export default function BottomNavbar({
                 isScrollable ? " app-nav--scroll" : ""
             }`}
         >
+            <span
+                className="app-nav__active-indicator"
+                style={{
+                    width: activeIndicator.width,
+                    transform: `translateX(${activeIndicator.x}px)`,
+                    opacity: activeIndicator.visible
+                        ? 1
+                        : 0,
+                }}
+            />
             {pages.map((p) => (
                 <NavLink
                     key={p.link}
