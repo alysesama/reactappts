@@ -1,0 +1,30 @@
+.home-page {
+    height: 100%;
+    display: flex;
+    gap: 16px;
+    overflow: hidden;
+}
+
+.home-page__left {
+    width: 50%;
+    min-width: 320px;
+    height: 100%;
+    overflow: hidden;
+}
+
+.home-page__right {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+}
+
+@media (max-width: 900px) {
+    .home-page {
+        flex-direction: column;
+    }
+
+    .home-page__left {
+        width: 100%;
+        min-width: 0;
+    }
+}

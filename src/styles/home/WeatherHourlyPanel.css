@@ -1,0 +1,75 @@
+.weather-hourly-panel {
+    border-radius: none;
+    border: none;
+    background: none;
+    padding: 4px;
+    overflow: hidden;
+    backdrop-filter: blur(var(--ui-blur));
+}
+
+.weather-hourly-panel__list {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px 0;
+    scroll-behavior: smooth;
+}
+
+.weather-hourly-panel__item {
+    flex: 0 0 auto;
+    width: 74px;
+    border: 1px solid var(--ui-border-color);
+    border-radius: var(--ui-radius-md);
+    background: var(--ui-card);
+    color: var(--ui-text);
+    padding: 8px 6px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: background 180ms ease, border-color 180ms ease,
+        box-shadow 180ms ease, transform 180ms ease;
+    transform: scale(1);
+}
+
+.weather-hourly-panel__item:hover {
+    background: var(--ui-card-hover);
+    transform: scale(1.01);
+}
+
+.weather-hourly-panel__item:active {
+    transform: scale(1);
+}
+
+.weather-hourly-panel__item:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ui-accent-ring);
+}
+
+.weather-hourly-panel__item--active {
+    border-color: var(--ui-accent);
+    box-shadow: 0 0 0 3px var(--ui-accent-ring);
+}
+
+.weather-hourly-panel__item-hour {
+    font-size: var(--weather-font-xs);
+    opacity: 0.95;
+}
+
+.weather-hourly-panel__item-icon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.weather-hourly-panel__item-icon-placeholder {
+    width: 40px;
+    height: 40px;
+}
+
+.weather-hourly-panel__item-temp {
+    font-size: var(--weather-font-sm);
+    font-weight: 600;
+}

@@ -1,13 +1,17 @@
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
+import Weather from "../shared/components/home/Weather";
+import HomeMenu from "../shared/components/home/HomeMenu";
+import "@/styles/home/HomePage.css";
 
 export default function HomePage() {
     return (
-        <section>
-            <h1>Home</h1>
-            <p>
-                Core skeleton (Vite + React TS + HashRouter)
-            </p>
-            <Link to="/workspace">Go to Workspace</Link>
+        <section className="home-page">
+            <div className="home-page__left">
+                <Weather />
+            </div>
+            <div className="home-page__right">
+                <HomeMenu />
+            </div>
         </section>
     );
 }

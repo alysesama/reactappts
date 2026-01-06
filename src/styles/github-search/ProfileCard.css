@@ -1,0 +1,160 @@
+.github-panel--info {
+    min-height: 0;
+    padding: 12px;
+    flex: 0 0 340px;
+    max-width: 380px;
+}
+
+.github-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+}
+
+.github-info__avatar {
+    flex-shrink: 0;
+}
+
+.github-info__avatar img {
+    width: 160px;
+    height: 160px;
+    border-radius: 12px;
+    border: 2px solid rgba(148, 163, 184, 0.3);
+}
+
+.github-info__details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.github-info__name {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.github-info__link {
+    color: #60a5fa;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.github-info__link:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+}
+
+.github-info__username {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 1rem;
+}
+
+.github-info__bio {
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    max-height: 6em;
+    overflow: hidden;
+}
+
+.github-info__stats {
+    display: flex;
+    gap: 24px;
+    margin-top: 8px;
+}
+
+.github-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.github-stat__label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+.github-stat__value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #e2e8f0;
+}
+
+.github-info__extra {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.85rem;
+}
+
+.github-info__row {
+    display: flex;
+    gap: 6px;
+}
+
+.github-info__row-label {
+    min-width: 110px;
+    color: #94a3b8;
+}
+
+.github-info__row-value {
+    color: #cbd5e1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.github-info__row-value a {
+    color: #60a5fa;
+    text-decoration: none;
+}
+
+.github-info__row-value a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 1200px) {
+    .github-panel--info {
+        width: 100%;
+        max-width: 100%;
+        flex: 0 0 auto;
+        padding: 10px;
+    }
+
+    .github-info {
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .github-info__avatar img {
+        width: 96px;
+        height: 96px;
+    }
+
+    .github-info__details {
+        gap: 6px;
+    }
+
+    .github-info__bio,
+    .github-info__extra {
+        display: none;
+    }
+
+    .github-info__stats {
+        gap: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .github-panel--info {
+        flex: 0 0 auto;
+        max-width: 100%;
+    }
+}

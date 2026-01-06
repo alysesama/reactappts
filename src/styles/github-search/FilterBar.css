@@ -1,0 +1,50 @@
+.github-search__form {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.github-search__input {
+    flex: 1;
+    padding: 12px 16px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease;
+}
+
+.github-search__input:focus {
+    outline: none;
+    border-color: rgba(59, 130, 246, 0.5);
+}
+
+.github-search__input::placeholder {
+    color: rgba(148, 163, 184, 0.5);
+}
+
+.github-search__button {
+    padding: 12px 24px;
+    background: linear-gradient(
+        135deg,
+        #3b82f6 0%,
+        #8b5cf6 100%
+    );
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.github-search__button:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.github-search__button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

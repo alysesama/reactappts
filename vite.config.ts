@@ -4,6 +4,7 @@ import path from 'node:path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  envDir: path.resolve(__dirname, 'env'),
   base: process.env.GITHUB_REPOSITORY
     ? `/${process.env.GITHUB_REPOSITORY.split('/')[1]}/`
     : '/',

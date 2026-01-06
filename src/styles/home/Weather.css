@@ -1,0 +1,111 @@
+.weather {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 6px;
+    -webkit-overflow-scrolling: touch;
+    font-size: var(--weather-font-sm);
+}
+
+.weather__loading {
+    font-size: var(--weather-font-md);
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.weather__spinner {
+    animation: weather-spin 900ms linear infinite;
+    opacity: 0.9;
+}
+
+@keyframes weather-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.weather__error {
+    padding: 10px;
+    border-radius: var(--ui-radius-md);
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #fecaca;
+    font-size: var(--weather-font-sm);
+}
+
+.weather__refresh {
+    align-self: flex-start;
+    border-radius: var(--ui-radius-md);
+    border: 1px solid var(--ui-border-color-soft);
+    background: var(--ui-surface);
+    color: var(--ui-text);
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 180ms ease, transform 180ms ease,
+        border-color 180ms ease;
+}
+
+.weather__refresh:hover {
+    background: var(--ui-card-hover);
+    transform: translateY(-1px);
+}
+
+.weather__refresh:active {
+    transform: translateY(0px);
+}
+
+.weather__panels {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.weather-debug {
+    border-radius: var(--ui-radius-md);
+    border: 1px solid var(--ui-border-color-soft);
+    background: var(--ui-surface);
+    padding: 10px;
+}
+
+.weather-debug__summary {
+    cursor: pointer;
+    user-select: none;
+    font-size: var(--weather-font-md);
+    font-weight: 700;
+}
+
+.weather-debug__body {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: var(--weather-font-sm);
+}
+
+.weather-debug__row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.weather-debug__row input[type="number"] {
+    width: 140px;
+}
+
+.weather-debug__row select {
+    min-width: 120px;
+}
+
+.weather-debug__actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+}

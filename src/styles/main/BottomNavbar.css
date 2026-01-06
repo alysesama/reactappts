@@ -1,0 +1,49 @@
+.app-nav {
+    height: 72px;
+    display: flex;
+    gap: 8px;
+    padding: 8px;
+    border-top: 1px solid rgba(229, 231, 235, 0.12);
+    background: rgba(11, 18, 32, 0.9);
+    box-sizing: border-box;
+    overflow: hidden;
+    scrollbar-gutter: stable;
+}
+
+.app-nav.app-nav--scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.app-nav__item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    text-decoration: none;
+    color: #93c5fd;
+    border-radius: 10px;
+}
+
+.app-nav.app-nav--scroll .app-nav__item {
+    flex: 0 0 calc((100% - 40px) / 6);
+    min-width: 200px;
+}
+
+.app-nav__item.is-active {
+    color: #e5e7eb;
+    background: rgba(147, 197, 253, 0.12);
+}
+
+.app-nav__icon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.app-nav__label {
+    font-size: 12px;
+    line-height: 1;
+}
