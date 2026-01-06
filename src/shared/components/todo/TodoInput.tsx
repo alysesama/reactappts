@@ -1,6 +1,4 @@
 import {
-    useEffect,
-    useMemo,
     useState,
     type ChangeEvent,
     type FormEvent,
@@ -62,18 +60,6 @@ export default function TodoInput({
     const [form, setForm] =
         useState<FormState>(defaultForm);
     const [error, setError] = useState("");
-    const [nowSeconds, setNowSeconds] = useState(0);
-
-    useEffect(() => {
-        const update = () => {
-            setNowSeconds(Math.floor(Date.now() / 1000));
-        };
-        update();
-        const id = window.setInterval(update, 30_000);
-        return () => {
-            window.clearInterval(id);
-        };
-    }, []);
 
     const handleDeadlineChange = (
         event: ChangeEvent<HTMLInputElement>
@@ -132,11 +118,6 @@ export default function TodoInput({
         }));
     };
 
-    const deadlineUnix = useMemo(
-        () => toUnixTime(form.task_deadline),
-        [form.task_deadline]
-    );
-
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
 
@@ -158,19 +139,6 @@ export default function TodoInput({
         setForm(defaultForm);
         setError("");
     };
-
-    const durationSeconds =
-        deadlineUnix && deadlineUnix > nowSeconds
-            ? deadlineUnix - nowSeconds
-            : null;
-    const durationText =
-        durationSeconds === null
-            ? "--"
-            : `${String(
-                  Math.floor(durationSeconds / 3600)
-              ).padStart(2, "0")}:${String(
-                  Math.floor((durationSeconds % 3600) / 60)
-              ).padStart(2, "0")}`;
 
     return (
         <form
