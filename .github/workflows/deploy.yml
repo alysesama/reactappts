@@ -30,8 +30,15 @@ jobs:
             - name: Install
               run: npm ci
 
+            - name: Create env file
+              run: |
+                  mkdir -p env
+                  printf "VITE_OPENWEATHER_API_KEY=%s\n" "${{ secrets.VITE_OPENWEATHER_API_KEY }}" > env/.env.production
+
             - name: Build
               run: npm run build
+              env:
+                  VITE_OPENWEATHER_API_KEY: ${{ secrets.VITE_OPENWEATHER_API_KEY }}
 
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3
