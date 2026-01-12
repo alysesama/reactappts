@@ -22,7 +22,7 @@
 
 .movie-detail {
     width: min(1320px, 100%);
-    max-height: min(92vh, 780px);
+    max-height: min(92vh, 720px);
     background: rgba(15, 23, 42, 0.92);
     overflow: hidden;
     display: flex;
