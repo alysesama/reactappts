@@ -12,6 +12,7 @@ import {
 } from "../api/tmdbImage";
 import { useTmdbGenres } from "../hooks/useTmdbGenres";
 import { useTmdbMovieList } from "../hooks/useTmdbMovieList";
+import MoviesTabError from "../ui/MoviesTabError";
 
 const CROSSFADE_MS = 1200;
 const AUTO_SWITCH_MS = 6500;
@@ -43,9 +44,8 @@ export default function TrendingTab({
 }: {
     onPickMovie: (movieId: number) => void;
 }) {
-    const { status, error, movies } = useTmdbMovieList(
-        "/trending/movie/day"
-    );
+    const { status, error, movies, refetch } =
+        useTmdbMovieList("/trending/movie/day");
 
     const { genreMap } = useTmdbGenres();
 
@@ -262,13 +262,15 @@ export default function TrendingTab({
                 </div>
             </div>
 
-            {status === "error" ? (
-                <div className="movies-trending-carousel__error">
-                    {error || "Failed to load"}
-                </div>
-            ) : null}
-
             <div className="movies-trending-carousel">
+                {status === "error" ? (
+                    <MoviesTabError
+                        error={error}
+                        onRetry={() => refetch()}
+                        variant="overlay"
+                    />
+                ) : null}
+
                 <button
                     type="button"
                     className="movies-trending-carousel__nav movies-trending-carousel__nav--prev"

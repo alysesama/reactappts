@@ -9,6 +9,7 @@
     overflow: hidden;
     scrollbar-gutter: stable;
     position: relative;
+    z-index: 1810;
 }
 
 .app-nav.app-nav--scroll {

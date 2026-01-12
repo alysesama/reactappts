@@ -3,6 +3,12 @@ import { tmdbGet } from "../api/tmdbClient";
 import type { TmdbMovie, TmdbPagedResult } from "../types/tmdbTypes";
 import type { RemoteStatus } from "./useTmdbMovieList";
 
+const MOVIE_LIST_BAD_DATA_ERROR = "Something is wrong when load movie data.";
+
+function isNonEmptyString(v: unknown) {
+    return typeof v === "string" && v.trim().length > 0;
+}
+
 export function useTmdbMovieSearch(query: string) {
     const [status, setStatus] = useState<RemoteStatus>("idle");
     const [error, setError] = useState<string>("");
@@ -34,7 +40,26 @@ export function useTmdbMovieSearch(query: string) {
                 controller.signal
             )
                 .then((data) => {
-                    const list = (data.results ?? []).slice(0, 5);
+                    const cleaned = (data.results ?? []).filter((m) =>
+                        isNonEmptyString(
+                            (m as unknown as Record<string, unknown>).title
+                        )
+                    );
+
+                    if ((data.results ?? []).length > 0 && cleaned.length === 0) {
+                        setResults([]);
+                        setError(MOVIE_LIST_BAD_DATA_ERROR);
+                        setStatus("error");
+                        return;
+                    }
+
+                    const list = cleaned
+                        .filter((m) =>
+                            isNonEmptyString(
+                                (m as unknown as Record<string, unknown>).title
+                            )
+                        )
+                        .slice(0, 5);
                     setResults(list);
                     setStatus("success");
                 })

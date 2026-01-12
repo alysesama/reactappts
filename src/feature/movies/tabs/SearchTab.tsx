@@ -6,6 +6,7 @@ import {
     useState,
 } from "react";
 import MediaPosterOverlayCard from "../ui/MediaPosterOverlayCard";
+import MoviesTabError from "../ui/MoviesTabError";
 import {
     useTmdbDiscoverSearch,
     type DiscoverFilters,
@@ -126,10 +127,20 @@ export default function SearchTab({
         id: number;
     }) => void;
 }) {
-    const { genres: movieGenres, genreMap: movieGenreMap } =
-        useTmdbGenres();
-    const { genres: tvGenres, genreMap: tvGenreMap } =
-        useTmdbTvGenres();
+    const {
+        status: movieGenreStatus,
+        error: movieGenreError,
+        genres: movieGenres,
+        genreMap: movieGenreMap,
+        refetch: refetchMovieGenres,
+    } = useTmdbGenres();
+    const {
+        status: tvGenreStatus,
+        error: tvGenreError,
+        genres: tvGenres,
+        genreMap: tvGenreMap,
+        refetch: refetchTvGenres,
+    } = useTmdbTvGenres();
 
     const [draft, setDraft] = useState<DiscoverFilters>(
         DEFAULT_MOVIE_FILTERS
@@ -146,13 +157,34 @@ export default function SearchTab({
             ? movieGenres
             : tvGenres;
 
+    const activeGenreStatus =
+        draft.mediaType === "movie"
+            ? movieGenreStatus
+            : tvGenreStatus;
+
+    const activeGenreError =
+        draft.mediaType === "movie"
+            ? movieGenreError
+            : tvGenreError;
+
+    const activeGenreRefetch =
+        draft.mediaType === "movie"
+            ? refetchMovieGenres
+            : refetchTvGenres;
+
     const activeGenreMap =
         applied.mediaType === "movie"
             ? movieGenreMap
             : tvGenreMap;
 
-    const { status, error, items, hasMore, loadMore } =
-        useTmdbDiscoverSearch(applied);
+    const {
+        status,
+        error,
+        items,
+        hasMore,
+        loadMore,
+        refetch,
+    } = useTmdbDiscoverSearch(applied);
 
     const scrollerRef = useRef<HTMLDivElement | null>(null);
 
@@ -360,6 +392,16 @@ export default function SearchTab({
                         <div className="mv-search__section-title">
                             Genres
                         </div>
+                        {activeGenreStatus === "error" ? (
+                            <MoviesTabError
+                                error={activeGenreError}
+                                onRetry={() =>
+                                    activeGenreRefetch()
+                                }
+                                variant="inline"
+                            />
+                        ) : null}
+
                         <div className="mv-search__genre-grid">
                             {activeGenreList.map((g) => {
                                 const isOn =
@@ -556,61 +598,71 @@ export default function SearchTab({
                     onScroll={handleScroll}
                 >
                     {status === "error" ? (
-                        <div className="movies-tab__error">
-                            {error || "Failed to load"}
-                        </div>
-                    ) : null}
-
-                    <div className="mv-search__grid">
-                        {items.map((it) => {
-                            const genreId =
-                                it.genre_ids?.[0];
-                            const genre = genreId
-                                ? activeGenreMap[genreId] ??
-                                  ""
-                                : "";
-
-                            return (
-                                <div
-                                    key={`${it.mediaType}-${it.id}`}
-                                    className="mv-search__cell"
-                                >
-                                    <MediaPosterOverlayCard
-                                        title={it.title}
-                                        posterPath={
-                                            it.poster_path
-                                        }
-                                        genre={genre}
-                                        rating={
-                                            it.vote_average
-                                        }
-                                        onClick={() =>
-                                            onPickMedia({
-                                                type: it.mediaType,
-                                                id: it.id,
-                                            })
-                                        }
-                                    />
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                    {status === "loading" &&
-                    items.length === 0 ? (
-                        <div className="movies-tab__loading">
-                            Loading...
-                        </div>
-                    ) : null}
-
-                    {hasMore ? (
-                        <div className="mv-search__loadmore">
-                            Scroll to load more...
-                        </div>
+                        <MoviesTabError
+                            error={error}
+                            onRetry={() => refetch()}
+                        />
                     ) : (
-                        <div className="mv-search__loadmore">
-                            End
-                        </div>
+                        <>
+                            <div className="mv-search__grid">
+                                {items.map((it) => {
+                                    const genreId =
+                                        it.genre_ids?.[0];
+                                    const genre = genreId
+                                        ? activeGenreMap[
+                                              genreId
+                                          ] ?? ""
+                                        : "";
+
+                                    return (
+                                        <div
+                                            key={`${it.mediaType}-${it.id}`}
+                                            className="mv-search__cell"
+                                        >
+                                            <MediaPosterOverlayCard
+                                                title={
+                                                    it.title
+                                                }
+                                                posterPath={
+                                                    it.poster_path
+                                                }
+                                                genre={
+                                                    genre
+                                                }
+                                                rating={
+                                                    it.vote_average
+                                                }
+                                                onClick={() =>
+                                                    onPickMedia(
+                                                        {
+                                                            type: it.mediaType,
+                                                            id: it.id,
+                                                        }
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {status === "loading" &&
+                            items.length === 0 ? (
+                                <div className="movies-tab__loading">
+                                    Loading...
+                                </div>
+                            ) : null}
+
+                            {hasMore ? (
+                                <div className="mv-search__loadmore">
+                                    Scroll to load more...
+                                </div>
+                            ) : (
+                                <div className="mv-search__loadmore">
+                                    End
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </div>

@@ -54,6 +54,8 @@ export type SearchMediaItem = {
     vote_average: number;
 };
 
+const DISCOVER_BAD_DATA_ERROR = "Something is wrong when load movie data.";
+
 type TmdbKeyword = {
     id: number;
     name: string;
@@ -63,6 +65,10 @@ type TmdbKeywordSearchResult = TmdbPagedResult<TmdbKeyword>;
 
 function clamp(v: number, min: number, max: number) {
     return Math.max(min, Math.min(max, v));
+}
+
+function isNonEmptyString(v: unknown) {
+    return typeof v === "string" && v.trim().length > 0;
 }
 
 async function resolveKeywordIds(
@@ -142,9 +148,14 @@ function buildDiscoverParams(
 function mapResultToItem(
     mediaType: DiscoverMediaType,
     r: TmdbMovie | TmdbTv
-): SearchMediaItem {
+): SearchMediaItem | null {
     if (mediaType === "movie") {
         const m = r as TmdbMovie;
+
+        if (!isNonEmptyString((m as unknown as Record<string, unknown>).title)) {
+            return null;
+        }
+
         return {
             id: m.id,
             mediaType,
@@ -156,6 +167,11 @@ function mapResultToItem(
     }
 
     const t = r as TmdbTv;
+
+    if (!isNonEmptyString((t as unknown as Record<string, unknown>).name)) {
+        return null;
+    }
+
     return {
         id: t.id,
         mediaType,
@@ -169,6 +185,8 @@ function mapResultToItem(
 export function useTmdbDiscoverSearch(filters: DiscoverFilters) {
     const [status, setStatus] = useState<RemoteStatus>("idle");
     const [error, setError] = useState<string>("");
+
+    const [refreshNonce, setRefreshNonce] = useState(0);
 
     const [items, setItems] = useState<SearchMediaItem[]>([]);
     const [hasMore, setHasMore] = useState(false);
@@ -267,7 +285,7 @@ export function useTmdbDiscoverSearch(filters: DiscoverFilters) {
 
                 const mapped = (data.results ?? []).map((r) =>
                     mapResultToItem(filters.mediaType, r)
-                );
+                ).filter((x): x is SearchMediaItem => x !== null);
 
                 bufferRef.current.push(...mapped);
                 const take = consumeFromBuffer(missing);
@@ -292,6 +310,10 @@ export function useTmdbDiscoverSearch(filters: DiscoverFilters) {
 
         return () => controller.abort();
     }, [consumeFromBuffer, fetchPage, filters.mediaType, hasMore]);
+
+    const refetch = useCallback(() => {
+        setRefreshNonce((n) => n + 1);
+    }, []);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -340,7 +362,11 @@ export function useTmdbDiscoverSearch(filters: DiscoverFilters) {
 
             const mapped = merged.map((r) =>
                 mapResultToItem(filters.mediaType, r)
-            );
+            ).filter((x): x is SearchMediaItem => x !== null);
+
+            if (merged.length > 0 && mapped.length === 0) {
+                throw new Error(DISCOVER_BAD_DATA_ERROR);
+            }
 
             bufferRef.current = mapped;
             const take = consumeFromBuffer(30);
@@ -375,6 +401,7 @@ export function useTmdbDiscoverSearch(filters: DiscoverFilters) {
         filters.mediaType,
         filters.keywords,
         signature,
+        refreshNonce,
     ]);
 
     return {
@@ -383,5 +410,6 @@ export function useTmdbDiscoverSearch(filters: DiscoverFilters) {
         items,
         hasMore,
         loadMore,
+        refetch,
     };
 }

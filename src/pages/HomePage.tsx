@@ -1,6 +1,6 @@
 // import { Link } from "react-router-dom";
-import Weather from "../shared/components/home/Weather";
-import HomeMenu from "../shared/components/home/HomeMenu";
+import Weather from "../feature/home/Weather";
+import HomeMenu from "../feature/home/HomeMenu";
 import "@/styles/home/HomePage.css";
 
 export default function HomePage() {

@@ -3,6 +3,7 @@ import MediaRowCarousel, {
     type MediaRowCarouselItem,
 } from "../ui/MediaRowCarousel";
 import Section2TabShell from "../ui/Section2TabShell";
+import MoviesTabError from "../ui/MoviesTabError";
 import { useTmdbGenres } from "../hooks/useTmdbGenres";
 import { useTmdbMovieList } from "../hooks/useTmdbMovieList";
 
@@ -11,9 +12,8 @@ export default function UpcomingTab({
 }: {
     onPickMovie: (movieId: number) => void;
 }) {
-    const { status, error, movies } = useTmdbMovieList(
-        "/movie/upcoming"
-    );
+    const { status, error, movies, refetch } =
+        useTmdbMovieList("/movie/upcoming");
 
     const { genreMap } = useTmdbGenres();
 
@@ -40,15 +40,16 @@ export default function UpcomingTab({
     return (
         <Section2TabShell label="Upcoming">
             {status === "error" ? (
-                <div className="movies-tab__error">
-                    {error || "Failed to load"}
-                </div>
-            ) : null}
-
-            <MediaRowCarousel
-                items={items}
-                onPick={onPickMovie}
-            />
+                <MoviesTabError
+                    error={error}
+                    onRetry={() => refetch()}
+                />
+            ) : (
+                <MediaRowCarousel
+                    items={items}
+                    onPick={onPickMovie}
+                />
+            )}
 
             {status === "loading" && items.length === 0 ? (
                 <div className="movies-tab__loading">

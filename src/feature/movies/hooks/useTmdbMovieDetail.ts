@@ -7,6 +7,13 @@ import type {
 } from "../types/tmdbTypes";
 import type { RemoteStatus } from "./useTmdbMovieList";
 
+const MOVIE_DETAIL_BAD_DATA_ERROR =
+    "Something is wrong when load movie data.";
+
+function isNonEmptyString(v: unknown) {
+    return typeof v === "string" && v.trim().length > 0;
+}
+
 export function useTmdbMovieDetail(movieId: number | null) {
     const [status, setStatus] = useState<RemoteStatus>("idle");
     const [error, setError] = useState<string>("");
@@ -50,6 +57,12 @@ export function useTmdbMovieDetail(movieId: number | null) {
                 ),
             ])
                 .then(([d, c, v]) => {
+                    const title =
+                        (d as unknown as Record<string, unknown>).title;
+                    if (!isNonEmptyString(title)) {
+                        throw new Error(MOVIE_DETAIL_BAD_DATA_ERROR);
+                    }
+
                     setDetails(d);
                     setCredits(c);
                     setVideos(v);
@@ -57,6 +70,10 @@ export function useTmdbMovieDetail(movieId: number | null) {
                 })
                 .catch((e: unknown) => {
                     if (controller.signal.aborted) return;
+
+                    setDetails(null);
+                    setCredits(null);
+                    setVideos(null);
                     setError(
                         e instanceof Error ? e.message : "Unknown error"
                     );

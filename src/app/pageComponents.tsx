@@ -3,7 +3,6 @@ import HomePage from "../pages/HomePage";
 import MoviesPage from "../pages/MoviesPage";
 import GitHubUserSearchPage from "../pages/GitHubUserSearchPage";
 import TodoAppPage from "../pages/TodoAppPage";
-import WorkspacePage from "../pages/WorkspacePage";
 
 export const PAGE_COMPONENTS: Record<
     string,
@@ -13,9 +12,4 @@ export const PAGE_COMPONENTS: Record<
     MoviesPage,
     GitHubUserSearchPage,
     TodoAppPage,
-    WorkspacePage,
-    WorkspacePage1: WorkspacePage,
-    WorkspacePage2: WorkspacePage,
-    WorkspacePage3: WorkspacePage,
-    WorkspacePage4: WorkspacePage,
 };

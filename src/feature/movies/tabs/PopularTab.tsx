@@ -3,6 +3,7 @@ import MediaRowCarousel, {
     type MediaRowCarouselItem,
 } from "../ui/MediaRowCarousel";
 import Section2TabShell from "../ui/Section2TabShell";
+import MoviesTabError from "../ui/MoviesTabError";
 import { useTmdbTvGenres } from "../hooks/useTmdbTvGenres";
 import { useTmdbTvList } from "../hooks/useTmdbTvList";
 
@@ -11,7 +12,7 @@ export default function PopularTab({
 }: {
     onPickTv: (tvId: number) => void;
 }) {
-    const { status, error, tv } =
+    const { status, error, tv, refetch } =
         useTmdbTvList("/tv/popular");
     const { genreMap } = useTmdbTvGenres();
 
@@ -38,15 +39,16 @@ export default function PopularTab({
     return (
         <Section2TabShell label="Popular TV show">
             {status === "error" ? (
-                <div className="movies-tab__error">
-                    {error || "Failed to load"}
-                </div>
-            ) : null}
-
-            <MediaRowCarousel
-                items={items}
-                onPick={onPickTv}
-            />
+                <MoviesTabError
+                    error={error}
+                    onRetry={() => refetch()}
+                />
+            ) : (
+                <MediaRowCarousel
+                    items={items}
+                    onPick={onPickTv}
+                />
+            )}
 
             {status === "loading" && items.length === 0 ? (
                 <div className="movies-tab__loading">

@@ -19,14 +19,19 @@ import PopularTab from "../tabs/PopularTab";
 import NowPlayingTab from "../tabs/NowPlayingTab";
 import SearchTab from "../tabs/SearchTab";
 import UpcomingTab from "../tabs/UpcomingTab";
+import MoviesDebugPanel from "./MoviesDebugPanel";
+import { useMoviesDebugRefreshId } from "../debug/useMoviesDebug";
 
-export default function MoviesApp() {
+function MoviesAppInner() {
     const [searchText, setSearchText] = useState("");
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [selectedMedia, setSelectedMedia] = useState<{
         type: "movie" | "tv";
         id: number;
     } | null>(null);
+
+    const isDev = import.meta.env.DEV;
+    const [isDebugOpen, setIsDebugOpen] = useState(false);
 
     const debounced = useDebouncedValue(searchText, 350);
     const { status, error, results } =
@@ -75,6 +80,18 @@ export default function MoviesApp() {
 
     return (
         <div className="movies-shell">
+            <div className="movies-vw-guard" role="alert">
+                <div className="movies-vw-guard__panel">
+                    <div className="movies-vw-guard__title">
+                        Screen too small
+                    </div>
+                    <div className="movies-vw-guard__text">
+                        Please expand your window to at
+                        least 1280px wide to view Movies.
+                    </div>
+                </div>
+            </div>
+
             {showResults ? (
                 <div
                     className="movies-search-backdrop"
@@ -85,25 +102,52 @@ export default function MoviesApp() {
 
             <div className="movies-shell__top">
                 <div className="movies-shell__search">
-                    <SearchBar
-                        value={searchText}
-                        onChange={setSearchText}
-                        onFocus={() =>
-                            setIsSearchOpen(true)
-                        }
-                        onClear={() => closeSearch()}
-                        placeholder="Search movies (TMDB)..."
-                    />
+                    {isDev ? (
+                        <button
+                            type="button"
+                            className="movies-debug-toggle"
+                            aria-label="Movies debug"
+                            onClick={() =>
+                                setIsDebugOpen((v) => !v)
+                            }
+                        >
+                            <i
+                                className="fa-solid fa-bug"
+                                aria-hidden="true"
+                            />
+                        </button>
+                    ) : null}
 
-                    <SearchResults
-                        visible={showResults}
-                        status={status}
-                        error={error}
-                        results={results}
-                        onPickMovie={(id) =>
-                            handlePickMovie(id)
-                        }
-                    />
+                    <div className="movies-shell__search-main">
+                        <SearchBar
+                            value={searchText}
+                            onChange={setSearchText}
+                            onFocus={() =>
+                                setIsSearchOpen(true)
+                            }
+                            onClear={() => closeSearch()}
+                            placeholder="Search movies (TMDB)..."
+                        />
+
+                        <SearchResults
+                            visible={showResults}
+                            status={status}
+                            error={error}
+                            results={results}
+                            onPickMovie={(id) =>
+                                handlePickMovie(id)
+                            }
+                        />
+
+                        {isDev ? (
+                            <MoviesDebugPanel
+                                open={isDebugOpen}
+                                onClose={() =>
+                                    setIsDebugOpen(false)
+                                }
+                            />
+                        ) : null}
+                    </div>
                 </div>
             </div>
 
@@ -141,4 +185,17 @@ export default function MoviesApp() {
             />
         </div>
     );
+}
+
+export default function MoviesApp() {
+    const isDev = import.meta.env.DEV;
+
+    if (!isDev) return <MoviesAppInner />;
+
+    return <MoviesAppDev />;
+}
+
+function MoviesAppDev() {
+    const refreshId = useMoviesDebugRefreshId();
+    return <MoviesAppInner key={refreshId} />;
 }

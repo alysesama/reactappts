@@ -1,4 +1,4 @@
-import TodoApp from "@/shared/components/todo/TodoApp";
+import TodoApp from "@/feature/todo/TodoApp";
 
 export default function TodoAppPage() {
     return (

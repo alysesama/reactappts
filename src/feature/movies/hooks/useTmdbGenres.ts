@@ -1,14 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { tmdbGet } from "../api/tmdbClient";
 import type { TmdbGenre } from "../types/tmdbTypes";
 import type { RemoteStatus } from "./useTmdbMovieList";
 
-export function useTmdbTvGenres() {
+export function useTmdbGenres() {
     const [status, setStatus] = useState<RemoteStatus>("idle");
     const [error, setError] = useState<string>("");
     const [genres, setGenres] = useState<TmdbGenre[]>([]);
 
-    useEffect(() => {
+    const fetchGenres = useCallback(() => {
         const controller = new AbortController();
 
         const id = window.setTimeout(() => {
@@ -16,7 +16,7 @@ export function useTmdbTvGenres() {
             setError("");
 
             tmdbGet<{ genres: TmdbGenre[] }>(
-                "/genre/tv/list",
+                "/genre/movie/list",
                 undefined,
                 controller.signal
             )
@@ -27,9 +27,7 @@ export function useTmdbTvGenres() {
                 .catch((e: unknown) => {
                     if (controller.signal.aborted) return;
                     setError(
-                        e instanceof Error
-                            ? e.message
-                            : "Unknown error"
+                        e instanceof Error ? e.message : "Unknown error"
                     );
                     setStatus("error");
                 });
@@ -40,6 +38,11 @@ export function useTmdbTvGenres() {
             controller.abort();
         };
     }, []);
+
+    useEffect(() => {
+        const abort = fetchGenres();
+        return () => abort();
+    }, [fetchGenres]);
 
     const genreMap = useMemo(() => {
         const m: Record<number, string> = {};
@@ -54,5 +57,6 @@ export function useTmdbTvGenres() {
         error,
         genres,
         genreMap,
+        refetch: fetchGenres,
     };
 }

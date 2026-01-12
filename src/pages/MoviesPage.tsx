@@ -1,4 +1,4 @@
-import MoviesApp from "@/shared/components/movies/ui/MoviesApp";
+import MoviesApp from "@/feature/movies/ui/MoviesApp";
 
 export default function MoviesPage() {
     return (

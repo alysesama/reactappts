@@ -1,4 +1,4 @@
-import GitHubUserSearch from "@/shared/components/github-search/GitHubUserSearch";
+import GitHubUserSearch from "@/feature/github-search/GitHubUserSearch";
 
 export default function GitHubUserSearchPage() {
     return (

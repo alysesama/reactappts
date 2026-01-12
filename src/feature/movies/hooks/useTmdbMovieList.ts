@@ -1,9 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import { tmdbGet } from "../api/tmdbClient";
-import type { TmdbPagedResult, TmdbTv } from "../types/tmdbTypes";
-import type { RemoteStatus } from "./useTmdbMovieList";
+import type { TmdbMovie, TmdbPagedResult } from "../types/tmdbTypes";
 
-export function useTmdbTvList(
+export type RemoteStatus = "idle" | "loading" | "success" | "error";
+
+const MOVIE_LIST_BAD_DATA_ERROR = "Something is wrong when load movie data.";
+
+function isNonEmptyString(v: unknown) {
+    return typeof v === "string" && v.trim().length > 0;
+}
+
+export function useTmdbMovieList(
     path: string,
     params?: Record<string, string | number | boolean | undefined | null>,
     options?: {
@@ -12,7 +19,7 @@ export function useTmdbTvList(
 ) {
     const [status, setStatus] = useState<RemoteStatus>("idle");
     const [error, setError] = useState<string>("");
-    const [tv, setTv] = useState<TmdbTv[]>([]);
+    const [movies, setMovies] = useState<TmdbMovie[]>([]);
 
     const enabled = options?.enabled ?? true;
 
@@ -23,28 +30,39 @@ export function useTmdbTvList(
             if (!enabled) {
                 setStatus("idle");
                 setError("");
-                setTv([]);
+                setMovies([]);
                 return;
             }
 
             setStatus("loading");
             setError("");
 
-            tmdbGet<TmdbPagedResult<TmdbTv>>(
+            tmdbGet<TmdbPagedResult<TmdbMovie>>(
                 path,
                 params,
                 controller.signal
             )
                 .then((data) => {
-                    setTv(data.results ?? []);
+                    const cleaned = (data.results ?? []).filter((m) =>
+                        isNonEmptyString(
+                            (m as unknown as Record<string, unknown>).title
+                        )
+                    );
+
+                    if ((data.results ?? []).length > 0 && cleaned.length === 0) {
+                        setMovies([]);
+                        setError(MOVIE_LIST_BAD_DATA_ERROR);
+                        setStatus("error");
+                        return;
+                    }
+
+                    setMovies(cleaned);
                     setStatus("success");
                 })
                 .catch((e: unknown) => {
                     if (controller.signal.aborted) return;
                     setError(
-                        e instanceof Error
-                            ? e.message
-                            : "Unknown error"
+                        e instanceof Error ? e.message : "Unknown error"
                     );
                     setStatus("error");
                 });
@@ -64,7 +82,7 @@ export function useTmdbTvList(
     return {
         status,
         error,
-        tv,
+        movies,
         refetch: fetchList,
     };
 }
