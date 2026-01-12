@@ -26,7 +26,7 @@
     --gh-grad-to: #8b5cf6;
 
     --gh-pad-shell: 8px;
-    --gh-gap: 8px;
+    --gh-gap: 16px;
     --gh-radius-control: 8px;
     --gh-radius-card: 10px;
     --gh-radius-panel: 12px;
@@ -58,13 +58,15 @@
     --gh-topic-hover-bg: rgba(37, 99, 235, 0.2);
     --gh-topic-hover-border: rgba(59, 130, 246, 0.6);
 
-    width: 100%;
+    
+    width: auto;
     height: 100%;
     display: flex;
     flex-direction: column;
     padding: var(--gh-pad-shell);
     color: var(--gh-text);
     overflow: hidden;
+    padding: 16px;
 }
 
 .github-search__error {

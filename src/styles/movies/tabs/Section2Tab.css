@@ -1,0 +1,38 @@
+.mv-s2-tab {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    gap: 0;
+}
+
+.mv-s2-tab__header {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    min-height: 0;
+}
+
+.mv-s2-tab__label {
+    font-family: var(--mv-font-display);
+    font-size: 1.55rem;
+    font-weight: 500;
+    color: var(--mv-color-text);
+    filter: brightness(0.9);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    opacity: 0.9;
+    white-space: nowrap;
+}
+
+.mv-s2-tab__line {
+    height: 2px;
+    background: rgba(226, 232, 240, 0.2);
+    flex: 1;
+    align-self: center;
+}
+
+.mv-s2-tab__body {
+    flex: 1;
+    min-height: 0;
+}

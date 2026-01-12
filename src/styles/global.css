@@ -35,6 +35,7 @@ body {
 * {
     scrollbar-width: thin;
     scrollbar-color: rgba(229, 231, 235, 0.32) transparent;
+    box-sizing: border-box;
 }
 
 *::-webkit-scrollbar {

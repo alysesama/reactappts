@@ -1,0 +1,18 @@
+.movies-section-group.movies-section-group--section2 {
+    padding: 0;
+    gap: 0;
+}
+
+.movies-section-group.movies-section-group--section2 .movies-section-group__body {
+    padding: 0;
+    gap: 0;
+}
+
+.movies-section-group.movies-section-group--section2 .movies-section-group__panel {
+    padding: 0;
+    gap: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    overflow: visible;
+}

@@ -1,0 +1,43 @@
+.movies-tab--popular {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+}
+
+.movies-tab--popular .movies-tab__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.movies-tab--popular .movies-tab__label {
+    font-size: 0.98rem;
+    font-weight: 900;
+}
+
+.movies-tab--popular .movies-tab__row {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+}
+
+.movies-tab--popular .movies-tab__item {
+    flex: 0 0 auto;
+    width: 320px;
+}
+
+.movies-tab__error {
+    padding: 10px 12px;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.22);
+    border-radius: var(--mv-radius-md);
+    color: rgba(252, 165, 165, 0.95);
+}
+
+.movies-tab__loading {
+    padding: 10px 0;
+    color: var(--mv-text-soft);
+}

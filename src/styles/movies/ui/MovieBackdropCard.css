@@ -1,0 +1,64 @@
+.movie-backdrop-card {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    border-radius: var(--mv-radius-md);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    background: rgba(15, 23, 42, 0.35);
+    cursor: pointer;
+    text-align: left;
+    color: var(--mv-text);
+}
+
+.movie-backdrop-card:hover {
+    background: rgba(15, 23, 42, 0.55);
+    border-color: rgba(59, 130, 246, 0.28);
+}
+
+.movie-backdrop-card__media {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(148, 163, 184, 0.1);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    display: grid;
+    place-items: center;
+}
+
+.movie-backdrop-card__media img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.movie-backdrop-card__fallback {
+    color: rgba(226, 232, 240, 0.5);
+    font-size: 1.1rem;
+}
+
+.movie-backdrop-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.movie-backdrop-card__title {
+    font-weight: 900;
+    font-size: 0.95rem;
+    line-height: 1.15;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.movie-backdrop-card__meta {
+    color: var(--mv-text-soft);
+    font-size: 0.82rem;
+}

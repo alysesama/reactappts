@@ -1,0 +1,115 @@
+.mv-row-carousel {
+    position: relative;
+    width: 100%;
+    min-height: 0;
+    height: 100%;
+    flex: 1;
+    display: flex;
+    align-items: stretch;
+    overflow: visible;
+}
+
+.mv-row-carousel__viewport {
+    width: 100%;
+    min-height: 0;
+    overflow: visible;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.mv-row-carousel__viewport::-webkit-scrollbar {
+    display: none;
+}
+
+.mv-row-carousel__track {
+    height: 100%;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc(100% / 5);
+    grid-template-rows: 1fr;
+    gap: 0;
+    padding: 0;
+    will-change: transform;
+}
+
+.mv-row-carousel__track.is-animating {
+    transition: transform 380ms ease;
+}
+
+.mv-row-carousel__track.is-resetting {
+    transition: none !important;
+}
+
+.mv-row-carousel__cell {
+    position: relative;
+    height: 100%;
+    min-height: 0;
+    overflow: visible;
+}
+
+.mv-row-carousel__nav {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 64px;
+    z-index: 3;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    color: rgba(226, 232, 240, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 160ms ease;
+}
+
+.mv-row-carousel__nav:hover,
+.mv-row-carousel__nav:focus-visible {
+    opacity: 1;
+}
+
+.mv-row-carousel__nav:disabled {
+    opacity: 0;
+    cursor: default;
+    pointer-events: none;
+}
+
+.mv-row-carousel__nav--prev {
+    left: 0;
+    justify-content: flex-start;
+    padding-left: 0;
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.85) 0%,
+        rgba(0, 0, 0, 0.0) 100%
+    );
+}
+
+.mv-row-carousel__nav--next {
+    right: 0;
+    justify-content: flex-end;
+    padding-right: 0;
+    background: linear-gradient(
+        to left,
+        rgba(0, 0, 0, 0.85) 0%,
+        rgba(0, 0, 0, 0.0) 100%
+    );
+}
+
+.mv-row-carousel__nav-icon {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+}
+
+.mv-row-carousel__nav i {
+    font-size: 1.5rem;
+}
+
+.mv-row-carousel__nav:hover .mv-row-carousel__nav-icon {
+    transform: scale(1.03);
+}

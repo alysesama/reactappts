@@ -22,13 +22,19 @@ export const APP_PAGES: AppPage[] = [
     name: 'Home',
     link: 'HomePage',
     iconClass: 'fa-solid fa-house',
-    description: 'Trang Home (tạm)',
+    description: 'Home',
+  },
+  {
+    name: 'Movies',
+    link: 'MoviesPage',
+    iconClass: 'fa-solid fa-film',
+    description: 'Tương tác với TMDB',
   },
   {
     name: 'Todo App',
     link: 'TodoAppPage',
     iconClass: 'fa-solid fa-clipboard-list',
-    description: 'Todo App (tạm)',
+    description: 'Quản lý công việc',
   },
   {
     name: 'GitHub Search',

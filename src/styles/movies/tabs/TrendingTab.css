@@ -1,0 +1,275 @@
+.movies-tab--trending {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: block;
+    min-height: 0;
+}
+
+.movies-tab--trending .movies-tab__header {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.movies-tab--trending .movies-tab__label {
+    font-family: var(--mv-font-display);
+    font-size: 5.25rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    opacity: 0.4;
+    text-transform: uppercase;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.65);
+}
+
+.movies-trending-carousel {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.movies-trending-carousel__slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+}
+
+.movies-trending-carousel__slide--active {
+    z-index: 3;
+    opacity: 0;
+    animation: mv-trending-fade-in 1200ms ease forwards;
+}
+
+.movies-trending-carousel__slide--prev {
+    z-index: 2;
+    pointer-events: none;
+    opacity: 1;
+    animation: mv-trending-fade-out 1200ms ease forwards;
+}
+
+@keyframes mv-trending-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes mv-trending-fade-out {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.movies-trending-carousel__media {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: rgba(2, 6, 23, 0.45);
+}
+
+.movies-trending-carousel__media img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.movies-trending-carousel__fallback {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.movies-trending-carousel__text {
+    position: absolute;
+    left: 24px;
+    bottom: 24px;
+    z-index: 3;
+    max-width: min(980px, calc(100% - 32px));
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-family: var(--mv-font-body);
+}
+
+.movies-trending-carousel__title-row {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.movies-trending-carousel__title {
+    font-family: var(--mv-font-display);
+    font-size: 4.25rem;
+    font-weight: 500;
+    line-height: 1.08;
+    text-shadow: 0 2px 22px rgba(0, 0, 0, 0.72);
+}
+
+.movies-trending-carousel__rating {
+    font-family: var(--mv-font-display);
+    font-size: 1.6rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.72);
+}
+
+.movies-trending-carousel__rating-value {
+    opacity: 0.95;
+}
+
+.movies-trending-carousel__genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-family: var(--mv-font-meta);
+    font-size: 1.02rem;
+    color: rgba(226, 232, 240, 0.9);
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.7);
+}
+
+.movies-trending-carousel__genre-pill {
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(226, 232, 240, 0.18);
+    background: rgba(2, 6, 23, 0.32);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.movies-trending-carousel__overview {
+    font-size: 1.25rem;
+    color: rgba(226, 232, 240, 0.78);
+    opacity: 0.7;
+    line-height: 1.55;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.75);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    line-clamp: 5;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+}
+
+.movies-trending-carousel__slide::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.92) 0%,
+        rgba(0, 0, 0, 0.55) 35%,
+        rgba(0, 0, 0, 0.15) 70%,
+        rgba(0, 0, 0, 0.0) 100%
+    );
+}
+
+.movies-trending-carousel__nav {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 96px;
+    z-index: 6;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    color: rgba(226, 232, 240, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 180ms ease;
+}
+
+.movies-trending-carousel__nav:hover,
+.movies-trending-carousel__nav:focus-visible {
+    opacity: 1;
+}
+
+.movies-trending-carousel__nav--prev {
+    left: 0;
+    justify-content: flex-start;
+    padding-left: 10px;
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.9) 0%,
+        rgba(0, 0, 0, 0.0) 100%
+    );
+}
+
+.movies-trending-carousel__nav--next {
+    right: 0;
+    justify-content: flex-end;
+    padding-right: 10px;
+    background: linear-gradient(
+        to left,
+        rgba(0, 0, 0, 0.9) 0%,
+        rgba(0, 0, 0, 0.0) 100%
+    );
+}
+
+.movies-trending-carousel__nav-icon {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    background: transparent;
+    transform: scale(0.98);
+    transition: transform 160ms ease;
+}
+
+.movies-trending-carousel__nav:hover .movies-trending-carousel__nav-icon {
+    transform: scale(1);
+}
+
+.movies-trending-carousel__nav:disabled {
+    opacity: 0;
+    cursor: default;
+}
+
+.movies-trending-carousel__nav i {
+    font-size: 1.55rem;
+}
+
+.movies-trending-carousel__loading {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    color: var(--mv-text-soft);
+}
+
+.movies-trending-carousel__error {
+    position: absolute;
+    top: 52px;
+    left: 14px;
+    z-index: 6;
+    padding: 10px 12px;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.22);
+    border-radius: 10px;
+    color: rgba(252, 165, 165, 0.95);
+}

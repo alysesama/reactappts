@@ -1,0 +1,3 @@
+.movies-section-group.movies-section-group--section2 .movies-section-group__panel {
+    flex: 0 0 calc(100% / 3);
+}

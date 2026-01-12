@@ -3,6 +3,7 @@
     display: flex;
     gap: 16px;
     overflow: hidden;
+    padding: 16px;
 }
 
 .home-page__left {
