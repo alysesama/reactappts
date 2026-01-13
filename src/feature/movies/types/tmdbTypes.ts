@@ -80,3 +80,38 @@ export type TmdbVideos = {
     id: number;
     results: TmdbMovieVideo[];
 };
+
+export type TmdbV4CreateRequestTokenResponse = {
+    success: boolean;
+    status_code?: number;
+    status_message?: string;
+    request_token: string;
+};
+
+export type TmdbV4CreateAccessTokenResponse = {
+    success: boolean;
+    status_code?: number;
+    status_message?: string;
+    access_token: string;
+    account_id: string;
+};
+
+export type TmdbV3ConvertSessionResponse = {
+    success: boolean;
+    session_id: string;
+};
+
+export type TmdbAccountDetails = {
+    id: number;
+    username: string;
+    name?: string;
+    include_adult?: boolean;
+    avatar?: {
+        gravatar?: {
+            hash?: string;
+        };
+        tmdb?: {
+            avatar_path?: string | null;
+        };
+    };
+};

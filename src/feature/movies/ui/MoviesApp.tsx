@@ -2,6 +2,7 @@ import {
     useCallback,
     useEffect,
     useMemo,
+    useRef,
     useState,
 } from "react";
 import "@/styles/movies/ui/MoviesApp.css";
@@ -13,6 +14,10 @@ import SearchResults from "./SearchResults";
 import MovieDetailPanel from "./MovieDetailPanel";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import { useTmdbMovieSearch } from "../hooks/useTmdbMovieSearch";
+import { useTmdbUserAuth } from "../hooks/useTmdbUserAuth";
+import { useMoviesNotifications } from "../hooks/useMoviesNotifications";
+import MoviesNotifications from "./MoviesNotifications";
+import TmdbUserButton from "./TmdbUserButton";
 import MovieSectionGroup from "./MovieSectionGroup";
 import TrendingTab from "../tabs/TrendingTab";
 import PopularTab from "../tabs/PopularTab";
@@ -36,6 +41,40 @@ function MoviesAppInner() {
     const debounced = useDebouncedValue(searchText, 350);
     const { status, error, results } =
         useTmdbMovieSearch(debounced);
+
+    const tmdbAuth = useTmdbUserAuth();
+    const {
+        items: notifItems,
+        notify,
+        close: closeNotif,
+    } = useMoviesNotifications();
+    const lastLoginNotifiedAtRef = useRef<number | null>(
+        null
+    );
+
+    useEffect(() => {
+        if (!tmdbAuth.loginSuccessAt) return;
+        if (
+            lastLoginNotifiedAtRef.current ===
+            tmdbAuth.loginSuccessAt
+        )
+            return;
+        const expiresAt = tmdbAuth.state?.expiresAt;
+        if (!expiresAt) return;
+
+        notify({
+            type: "good",
+            message: `Đăng nhập thành công, session hết hạn lúc ${new Date(
+                expiresAt
+            ).toLocaleString()}`,
+        });
+        lastLoginNotifiedAtRef.current =
+            tmdbAuth.loginSuccessAt;
+    }, [
+        notify,
+        tmdbAuth.loginSuccessAt,
+        tmdbAuth.state?.expiresAt,
+    ]);
 
     const showResults = useMemo(() => {
         const hasQuery = searchText.trim().length > 0;
@@ -80,6 +119,10 @@ function MoviesAppInner() {
 
     return (
         <div className="movies-shell">
+            <MoviesNotifications
+                items={notifItems}
+                onClose={closeNotif}
+            />
             <div className="movies-vw-guard" role="alert">
                 <div className="movies-vw-guard__panel">
                     <div className="movies-vw-guard__title">
@@ -147,6 +190,38 @@ function MoviesAppInner() {
                                 }
                             />
                         ) : null}
+                    </div>
+
+                    <div className="movies-shell__account">
+                        <TmdbUserButton
+                            status={tmdbAuth.status}
+                            error={tmdbAuth.error}
+                            accountId={
+                                tmdbAuth.user?.accountId ??
+                                ""
+                            }
+                            sessionId={
+                                tmdbAuth.user?.sessionId ??
+                                ""
+                            }
+                            username={
+                                tmdbAuth.user?.username ??
+                                ""
+                            }
+                            avatarUrl={
+                                tmdbAuth.user?.avatarUrl ??
+                                ""
+                            }
+                            accessToken={
+                                tmdbAuth.accessToken
+                            }
+                            expiresAt={
+                                tmdbAuth.state?.expiresAt ??
+                                null
+                            }
+                            onLogin={tmdbAuth.login}
+                            onLogout={tmdbAuth.logout}
+                        />
                     </div>
                 </div>
             </div>

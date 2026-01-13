@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import "@/styles/movies/ui/SearchBar.css";
 
 export default function SearchBar({
@@ -7,12 +7,14 @@ export default function SearchBar({
     onFocus,
     onClear,
     placeholder,
+    right,
 }: {
     value: string;
     onChange: (value: string) => void;
     onFocus?: () => void;
     onClear?: () => void;
     placeholder?: string;
+    right?: ReactNode;
 }) {
     const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -42,6 +44,7 @@ export default function SearchBar({
                     }
                     spellCheck={false}
                 />
+                {right ? right : null}
                 {value ? (
                     <button
                         type="button"

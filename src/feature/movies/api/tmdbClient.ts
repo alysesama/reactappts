@@ -2,6 +2,7 @@ import { readMoviesDebugConfig } from "../debug/moviesDebugConfig";
 import { transformTmdb200 } from "../debug/moviesDebugTransform";
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
+const TMDB_V4_BASE_URL = "https://api.themoviedb.org/4";
 const DEFAULT_LANGUAGE = "en-US";
 
 function getTmdbReadAccessToken() {
@@ -16,13 +17,25 @@ function getTmdbApiKey() {
     return typeof key === "string" && key.trim() ? key.trim() : "";
 }
 
-function buildQuery(params?: Record<string, string | number | boolean | undefined | null>) {
+function buildQuery(
+    params?: Record<string, string | number | boolean | undefined | null>,
+    options?: {
+        includeLanguage?: boolean;
+    }
+) {
     const q = new URLSearchParams();
 
-    const withLanguage: Record<string, string | number | boolean | undefined | null> = {
-        language: DEFAULT_LANGUAGE,
-        ...params,
-    };
+    const includeLanguage = options?.includeLanguage !== false;
+
+    const withLanguage: Record<string, string | number | boolean | undefined | null> =
+        includeLanguage
+            ? {
+                  language: DEFAULT_LANGUAGE,
+                  ...params,
+              }
+            : {
+                  ...params,
+              };
 
     for (const [k, v] of Object.entries(withLanguage)) {
         if (v === undefined || v === null) continue;
@@ -153,4 +166,148 @@ export async function tmdbGet<T>(
     }
 
     return json as T;
+}
+
+async function tmdbRequest<T>(
+    {
+        baseUrl,
+        method,
+        path,
+        params,
+        body,
+        signal,
+        bearerToken,
+        includeLanguage,
+    }: {
+        baseUrl: string;
+        method: "GET" | "POST" | "PUT" | "DELETE";
+        path: string;
+        params?: Record<string, string | number | boolean | undefined | null>;
+        body?: unknown;
+        signal?: AbortSignal;
+        bearerToken?: string;
+        includeLanguage?: boolean;
+    }
+): Promise<T> {
+    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+
+    const url = new URL(`${baseUrl}${normalizedPath}`);
+    const query = buildQuery(params, {
+        includeLanguage: includeLanguage !== false,
+    });
+    url.search = query.toString();
+
+    const token = bearerToken ?? getTmdbReadAccessToken();
+
+    const headers: HeadersInit = {
+        Accept: "application/json",
+    };
+    if (token) headers.Authorization = `Bearer ${token}`;
+    if (body !== undefined) headers["Content-Type"] = "application/json";
+
+    const res = await fetch(url.toString(), {
+        method,
+        headers,
+        body: body === undefined ? undefined : JSON.stringify(body),
+        signal,
+    });
+
+    if (!res.ok) {
+        let detail = "";
+        try {
+            detail = await res.text();
+        } catch {
+            // ignore
+        }
+        throw new Error(
+            `TMDB request failed: ${res.status} ${res.statusText}${detail ? ` - ${detail}` : ""}`
+        );
+    }
+
+    if (res.status === 204) return undefined as T;
+
+    const json = (await res.json()) as unknown;
+    return json as T;
+}
+
+export async function tmdbPost<T>(
+    path: string,
+    body?: unknown,
+    params?: Record<string, string | number | boolean | undefined | null>,
+    signal?: AbortSignal,
+    options?: {
+        bearerToken?: string;
+        includeLanguage?: boolean;
+    }
+) {
+    return tmdbRequest<T>({
+        baseUrl: TMDB_BASE_URL,
+        method: "POST",
+        path,
+        params,
+        body,
+        signal,
+        bearerToken: options?.bearerToken,
+        includeLanguage: options?.includeLanguage,
+    });
+}
+
+export async function tmdbDelete<T>(
+    path: string,
+    body?: unknown,
+    params?: Record<string, string | number | boolean | undefined | null>,
+    signal?: AbortSignal,
+    options?: {
+        bearerToken?: string;
+        includeLanguage?: boolean;
+    }
+) {
+    return tmdbRequest<T>({
+        baseUrl: TMDB_BASE_URL,
+        method: "DELETE",
+        path,
+        params,
+        body,
+        signal,
+        bearerToken: options?.bearerToken,
+        includeLanguage: options?.includeLanguage,
+    });
+}
+
+export async function tmdbV4Post<T>(
+    path: string,
+    body?: unknown,
+    params?: Record<string, string | number | boolean | undefined | null>,
+    signal?: AbortSignal,
+    bearerToken?: string
+) {
+    return tmdbRequest<T>({
+        baseUrl: TMDB_V4_BASE_URL,
+        method: "POST",
+        path,
+        params,
+        body,
+        signal,
+        bearerToken,
+        includeLanguage: false,
+    });
+}
+
+export async function tmdbV4Delete<T>(
+    path: string,
+    body?: unknown,
+    params?: Record<string, string | number | boolean | undefined | null>,
+    signal?: AbortSignal,
+    bearerToken?: string
+) {
+    return tmdbRequest<T>({
+        baseUrl: TMDB_V4_BASE_URL,
+        method: "DELETE",
+        path,
+        params,
+        body,
+        signal,
+        bearerToken,
+        includeLanguage: false,
+    });
 }
