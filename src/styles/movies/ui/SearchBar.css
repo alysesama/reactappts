@@ -1,5 +1,6 @@
 .movies-search {
     width: 100%;
+    height: 100%;
 }
 
 .movies-search__bar {
@@ -7,6 +8,7 @@
     align-items: center;
     gap: 10px;
     width: 100%;
+    height: 100%;
     padding: 0;
     background: var(--mv-panel);
     border: none;

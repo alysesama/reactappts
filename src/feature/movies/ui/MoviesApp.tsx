@@ -16,7 +16,9 @@ import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import { useTmdbMovieSearch } from "../hooks/useTmdbMovieSearch";
 import { useTmdbUserAuth } from "../hooks/useTmdbUserAuth";
 import { useMoviesNotifications } from "../hooks/useMoviesNotifications";
+import { useTmdbUserLists } from "../hooks/useTmdbUserLists";
 import MoviesNotifications from "./MoviesNotifications";
+import MoviesUserListsPanel from "./MoviesUserListsPanel";
 import TmdbUserButton from "./TmdbUserButton";
 import MovieSectionGroup from "./MovieSectionGroup";
 import TrendingTab from "../tabs/TrendingTab";
@@ -51,6 +53,24 @@ function MoviesAppInner() {
     const lastLoginNotifiedAtRef = useRef<number | null>(
         null
     );
+    const lastUserDataErrorRef = useRef<string>("");
+
+    const isLoggedIn =
+        tmdbAuth.status === "ready" &&
+        !!tmdbAuth.user?.sessionId;
+
+    const userLists = useTmdbUserLists({
+        enabled: isLoggedIn,
+        accountId: tmdbAuth.user?.accountId ?? "",
+        sessionId: tmdbAuth.user?.sessionId ?? "",
+        refreshKey: tmdbAuth.loginSuccessAt,
+    });
+
+    const [userListsOpen, setUserListsOpen] =
+        useState(false);
+    const [userListsKind, setUserListsKind] = useState<
+        "favorite" | "watchlist"
+    >("favorite");
 
     useEffect(() => {
         if (!tmdbAuth.loginSuccessAt) return;
@@ -64,7 +84,7 @@ function MoviesAppInner() {
 
         notify({
             type: "good",
-            message: `Đăng nhập thành công, session hết hạn lúc ${new Date(
+            message: `Login successfully, session expired at ${new Date(
                 expiresAt
             ).toLocaleString()}`,
         });
@@ -74,6 +94,32 @@ function MoviesAppInner() {
         notify,
         tmdbAuth.loginSuccessAt,
         tmdbAuth.state?.expiresAt,
+    ]);
+
+    useEffect(() => {
+        if (!isLoggedIn) {
+            lastUserDataErrorRef.current = "";
+            return;
+        }
+        if (
+            userLists.status !== "error" ||
+            !userLists.error
+        )
+            return;
+
+        const msg = `Something is wrong when trying to load user data: ${userLists.error}`;
+        if (lastUserDataErrorRef.current === msg) return;
+        lastUserDataErrorRef.current = msg;
+
+        notify({
+            type: "bad",
+            message: msg,
+        });
+    }, [
+        isLoggedIn,
+        notify,
+        userLists.error,
+        userLists.status,
     ]);
 
     const showResults = useMemo(() => {
@@ -193,6 +239,41 @@ function MoviesAppInner() {
                     </div>
 
                     <div className="movies-shell__account">
+                        {isLoggedIn ? (
+                            <button
+                                type="button"
+                                className="movies-account__lists"
+                                aria-label="User lists"
+                                onClick={() =>
+                                    setUserListsOpen(
+                                        (v) => !v
+                                    )
+                                }
+                            >
+                                <i
+                                    className="fa-solid fa-table-list"
+                                    aria-hidden="true"
+                                />
+                            </button>
+                        ) : null}
+
+                        <MoviesUserListsPanel
+                            open={
+                                isLoggedIn && userListsOpen
+                            }
+                            status={userLists.status}
+                            kind={userListsKind}
+                            items={
+                                userListsKind === "favorite"
+                                    ? userLists.favoriteAll
+                                    : userLists.watchlistAll
+                            }
+                            onClose={() =>
+                                setUserListsOpen(false)
+                            }
+                            onChangeKind={setUserListsKind}
+                        />
+
                         <TmdbUserButton
                             status={tmdbAuth.status}
                             error={tmdbAuth.error}
@@ -220,7 +301,10 @@ function MoviesAppInner() {
                                 null
                             }
                             onLogin={tmdbAuth.login}
-                            onLogout={tmdbAuth.logout}
+                            onLogout={() => {
+                                setUserListsOpen(false);
+                                tmdbAuth.logout();
+                            }}
                         />
                     </div>
                 </div>

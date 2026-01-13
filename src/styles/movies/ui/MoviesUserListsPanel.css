@@ -1,0 +1,103 @@
+.mv-userlists {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 120;
+    width: min(520px, calc(100vw - 16px));
+    max-height: min(520px, calc(100vh - 80px));
+    overflow: hidden;
+    background: var(--mv-panel-strong);
+    border: 1px solid var(--mv-border-strong);
+    border-radius: var(--mv-radius-md);
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.55);
+    display: grid;
+    grid-template-rows: auto 1fr;
+}
+
+.mv-userlists__nav {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.mv-userlists__tab {
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    background: rgba(148, 163, 184, 0.08);
+    color: var(--mv-text);
+    font-family: var(--mv-font-ui);
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.mv-userlists__tab--active {
+    background: rgba(59, 130, 246, 0.18);
+    border-color: rgba(59, 130, 246, 0.28);
+}
+
+.mv-userlists__list {
+    overflow: auto;
+    padding: 8px;
+    display: grid;
+    gap: 8px;
+}
+
+.mv-userlists__empty {
+    padding: 12px;
+    color: var(--mv-text-soft);
+    font-family: var(--mv-font-ui);
+}
+
+.mv-userlists__item {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 10px;
+    align-items: center;
+    padding: 8px;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(148, 163, 184, 0.06);
+}
+
+.mv-userlists__thumb {
+    width: 44px;
+    aspect-ratio: 2 / 3;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    background: rgba(148, 163, 184, 0.06);
+    display: grid;
+    place-items: center;
+    color: var(--mv-text-dim);
+}
+
+.mv-userlists__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.mv-userlists__meta {
+    min-width: 0;
+    display: grid;
+    gap: 2px;
+}
+
+.mv-userlists__title {
+    font-family: var(--mv-font-ui);
+    font-weight: 800;
+    color: var(--mv-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mv-userlists__sub {
+    font-family: var(--mv-font-ui);
+    color: var(--mv-text-dim);
+    font-size: 0.9rem;
+}
