@@ -7,12 +7,17 @@ import {
     useState,
 } from "react";
 import MediaBackdropOverlayCard from "./MediaBackdropOverlayCard";
+import type {
+    UserListItem,
+    UserListsStatus,
+} from "../hooks/useTmdbUserLists";
 
 const TRANSITION_MS = 380;
 const DEFAULT_AUTO_MS = 9000;
 
 export type MediaRowCarouselItem = {
     id: number;
+    mediaType: "movie" | "tv";
     title: string;
     backdrop_path: string | null;
     poster_path: string | null;
@@ -30,10 +35,36 @@ export default function MediaRowCarousel({
     items,
     onPick,
     autoMs = DEFAULT_AUTO_MS,
+    accountId,
+    sessionId,
+    userListsStatus,
+    isFavorite,
+    isWatchlist,
+    setFavoriteLocal,
+    setWatchlistLocal,
 }: {
     items: MediaRowCarouselItem[];
     onPick: (id: number) => void;
     autoMs?: number;
+    accountId: string;
+    sessionId: string;
+    userListsStatus: UserListsStatus;
+    isFavorite: (
+        mediaType: "movie" | "tv",
+        id: number,
+    ) => boolean;
+    isWatchlist: (
+        mediaType: "movie" | "tv",
+        id: number,
+    ) => boolean;
+    setFavoriteLocal: (
+        item: UserListItem,
+        active: boolean,
+    ) => void;
+    setWatchlistLocal: (
+        item: UserListItem,
+        active: boolean,
+    ) => void;
 }) {
     const len = items.length;
 
@@ -56,11 +87,11 @@ export default function MediaRowCarousel({
     const lastMeasuredStepPxRef = useRef(0);
     const trackRef = useRef<HTMLDivElement | null>(null);
     const firstCellRef = useRef<HTMLDivElement | null>(
-        null
+        null,
     );
 
     const transitionTimeoutRef = useRef<number | null>(
-        null
+        null,
     );
 
     const autoTimeoutRef = useRef<number | null>(null);
@@ -96,7 +127,7 @@ export default function MediaRowCarousel({
     const cancelTransitionAndReset = useCallback(() => {
         if (transitionTimeoutRef.current !== null) {
             window.clearTimeout(
-                transitionTimeoutRef.current
+                transitionTimeoutRef.current,
             );
             transitionTimeoutRef.current = null;
         }
@@ -174,7 +205,7 @@ export default function MediaRowCarousel({
                     (_, i) =>
                         items[
                             wrapIndex(startIndex + i, len)
-                        ]
+                        ],
                 )
                 .filter(Boolean);
         }
@@ -186,7 +217,7 @@ export default function MediaRowCarousel({
                     (_, i) =>
                         items[
                             wrapIndex(startIndex + i, len)
-                        ]
+                        ],
                 )
                 .filter(Boolean);
         }
@@ -197,7 +228,7 @@ export default function MediaRowCarousel({
                 (_, i) =>
                     items[
                         wrapIndex(startIndex - 1 + i, len)
-                    ]
+                    ],
             )
             .filter(Boolean);
     }, [direction, items, len, startIndex]);
@@ -245,7 +276,7 @@ export default function MediaRowCarousel({
                 setDisableTransition(false);
             });
         },
-        []
+        [],
     );
 
     const startNext = useCallback(() => {
@@ -258,7 +289,7 @@ export default function MediaRowCarousel({
         if (!step) {
             const next = wrapIndex(
                 startIndexRef.current + 1,
-                len
+                len,
             );
             setStartIndex(next);
             startIndexRef.current = next;
@@ -280,7 +311,7 @@ export default function MediaRowCarousel({
 
         if (transitionTimeoutRef.current !== null) {
             window.clearTimeout(
-                transitionTimeoutRef.current
+                transitionTimeoutRef.current,
             );
             transitionTimeoutRef.current = null;
         }
@@ -289,13 +320,13 @@ export default function MediaRowCarousel({
             () => {
                 const next = wrapIndex(
                     startIndexRef.current + 1,
-                    len
+                    len,
                 );
                 resetAfterTransition(next);
                 scheduleAuto();
                 transitionTimeoutRef.current = null;
             },
-            TRANSITION_MS
+            TRANSITION_MS,
         );
     }, [
         clearAuto,
@@ -325,7 +356,7 @@ export default function MediaRowCarousel({
         if (!step) {
             const next = wrapIndex(
                 startIndexRef.current - 1,
-                len
+                len,
             );
             setStartIndex(next);
             startIndexRef.current = next;
@@ -347,7 +378,7 @@ export default function MediaRowCarousel({
 
         if (transitionTimeoutRef.current !== null) {
             window.clearTimeout(
-                transitionTimeoutRef.current
+                transitionTimeoutRef.current,
             );
             transitionTimeoutRef.current = null;
         }
@@ -356,13 +387,13 @@ export default function MediaRowCarousel({
             () => {
                 const next = wrapIndex(
                     startIndexRef.current - 1,
-                    len
+                    len,
                 );
                 resetAfterTransition(next);
                 scheduleAuto();
                 transitionTimeoutRef.current = null;
             },
-            TRANSITION_MS
+            TRANSITION_MS,
         );
     }, [
         clearAuto,
@@ -432,6 +463,8 @@ export default function MediaRowCarousel({
                             }
                         >
                             <MediaBackdropOverlayCard
+                                mediaType={m.mediaType}
+                                mediaId={m.id}
                                 title={m.title}
                                 backdropPath={
                                     m.backdrop_path
@@ -440,6 +473,19 @@ export default function MediaRowCarousel({
                                 genre={m.genre}
                                 rating={m.rating}
                                 onClick={() => onPick(m.id)}
+                                accountId={accountId}
+                                sessionId={sessionId}
+                                userListsStatus={
+                                    userListsStatus
+                                }
+                                isFavorite={isFavorite}
+                                isWatchlist={isWatchlist}
+                                setFavoriteLocal={
+                                    setFavoriteLocal
+                                }
+                                setWatchlistLocal={
+                                    setWatchlistLocal
+                                }
                             />
                         </div>
                     ))}

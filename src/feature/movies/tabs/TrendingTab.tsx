@@ -10,8 +10,13 @@ import {
     preloadImage,
     tmdbImageUrl,
 } from "../api/tmdbImage";
+import { tmdbPost } from "../api/tmdbClient";
 import { useTmdbGenres } from "../hooks/useTmdbGenres";
 import { useTmdbMovieList } from "../hooks/useTmdbMovieList";
+import type {
+    UserListItem,
+    UserListsStatus,
+} from "../hooks/useTmdbUserLists";
 import MoviesTabError from "../ui/MoviesTabError";
 
 const CROSSFADE_MS = 1200;
@@ -41,8 +46,28 @@ function ratingColor(rating0to10: number) {
 
 export default function TrendingTab({
     onPickMovie,
+    accountId,
+    sessionId,
+    userListsStatus,
+    isFavoriteMovie,
+    isWatchlistMovie,
+    setFavoriteMovieLocal,
+    setWatchlistMovieLocal,
 }: {
     onPickMovie: (movieId: number) => void;
+    accountId: string;
+    sessionId: string;
+    userListsStatus: UserListsStatus;
+    isFavoriteMovie: (movieId: number) => boolean;
+    isWatchlistMovie: (movieId: number) => boolean;
+    setFavoriteMovieLocal: (
+        item: UserListItem,
+        active: boolean,
+    ) => void;
+    setWatchlistMovieLocal: (
+        item: UserListItem,
+        active: boolean,
+    ) => void;
 }) {
     const { status, error, movies, refetch } =
         useTmdbMovieList("/trending/movie/day");
@@ -51,7 +76,7 @@ export default function TrendingTab({
 
     const items = useMemo(
         () => movies.slice(0, 5),
-        [movies]
+        [movies],
     );
 
     const [activeIndex, setActiveIndex] = useState(0);
@@ -90,7 +115,7 @@ export default function TrendingTab({
     const scheduleClearPrev = useCallback(() => {
         if (clearPrevTimeoutRef.current !== null) {
             window.clearTimeout(
-                clearPrevTimeoutRef.current
+                clearPrevTimeoutRef.current,
             );
         }
 
@@ -101,7 +126,7 @@ export default function TrendingTab({
                 isTransitioningRef.current = false;
                 clearPrevTimeoutRef.current = null;
             },
-            CROSSFADE_MS
+            CROSSFADE_MS,
         );
     }, []);
 
@@ -109,7 +134,7 @@ export default function TrendingTab({
         return () => {
             if (clearPrevTimeoutRef.current !== null) {
                 window.clearTimeout(
-                    clearPrevTimeoutRef.current
+                    clearPrevTimeoutRef.current,
                 );
             }
 
@@ -136,7 +161,7 @@ export default function TrendingTab({
 
             scheduleClearPrev();
         },
-        [items.length, scheduleClearPrev]
+        [items.length, scheduleClearPrev],
     );
 
     const scheduleAutoSwitch = useCallback(() => {
@@ -187,7 +212,7 @@ export default function TrendingTab({
                 ""
             );
         },
-        []
+        [],
     );
 
     const activeBackdropUrl = useMemo(() => {
@@ -253,6 +278,112 @@ export default function TrendingTab({
     const activeRatingText = active
         ? activeRating.toFixed(1)
         : "";
+
+    const [isFavoritePending, setIsFavoritePending] =
+        useState(false);
+    const [isWatchlistPending, setIsWatchlistPending] =
+        useState(false);
+
+    useEffect(() => {
+        setIsFavoritePending(false);
+        setIsWatchlistPending(false);
+    }, [active?.id]);
+
+    const canMutate =
+        !!active &&
+        !!accountId &&
+        !!sessionId &&
+        userListsStatus !== "loading";
+
+    const isFavActive = active
+        ? isFavoriteMovie(active.id)
+        : false;
+    const isWlActive = active
+        ? isWatchlistMovie(active.id)
+        : false;
+
+    const buildActiveItem =
+        useCallback((): UserListItem | null => {
+            if (!active) return null;
+            return {
+                id: active.id,
+                mediaType: "movie",
+                title: active.title,
+                poster_path: active.poster_path,
+                vote_average: active.vote_average,
+            };
+        }, [active]);
+
+    const toggleFavorite = useCallback(
+        async (next: boolean) => {
+            if (!active) return;
+            if (!canMutate) return;
+            if (isFavoritePending) return;
+
+            setIsFavoritePending(true);
+            try {
+                await tmdbPost<unknown>(
+                    `/account/${accountId}/favorite`,
+                    {
+                        media_type: "movie",
+                        media_id: active.id,
+                        favorite: next,
+                    },
+                    { session_id: sessionId },
+                );
+
+                const item = buildActiveItem();
+                if (item) setFavoriteMovieLocal(item, next);
+            } finally {
+                setIsFavoritePending(false);
+            }
+        },
+        [
+            accountId,
+            active,
+            buildActiveItem,
+            canMutate,
+            isFavoritePending,
+            sessionId,
+            setFavoriteMovieLocal,
+        ],
+    );
+
+    const toggleWatchlist = useCallback(
+        async (next: boolean) => {
+            if (!active) return;
+            if (!canMutate) return;
+            if (isWatchlistPending) return;
+
+            setIsWatchlistPending(true);
+            try {
+                await tmdbPost<unknown>(
+                    `/account/${accountId}/watchlist`,
+                    {
+                        media_type: "movie",
+                        media_id: active.id,
+                        watchlist: next,
+                    },
+                    { session_id: sessionId },
+                );
+
+                const item = buildActiveItem();
+                if (item)
+                    setWatchlistMovieLocal(item, next);
+            } finally {
+                setIsWatchlistPending(false);
+            }
+        },
+        [
+            accountId,
+            active,
+            buildActiveItem,
+            canMutate,
+            isWatchlistPending,
+            sessionId,
+            setWatchlistMovieLocal,
+        ],
+    );
 
     return (
         <div className="movies-tab movies-tab--trending">
@@ -322,16 +453,27 @@ export default function TrendingTab({
                     </div>
                 ) : null}
 
-                <button
-                    type="button"
+                <div
                     key={active?.id ?? "empty"}
                     className="movies-trending-carousel__slide movies-trending-carousel__slide--active"
+                    role="button"
+                    tabIndex={active ? 0 : -1}
                     onClick={() =>
                         active
                             ? onPickMovie(active.id)
                             : undefined
                     }
-                    disabled={!active}
+                    onKeyDown={(e) => {
+                        if (!active) return;
+                        if (
+                            e.key === "Enter" ||
+                            e.key === " "
+                        ) {
+                            e.preventDefault();
+                            onPickMovie(active.id);
+                        }
+                    }}
+                    aria-disabled={!active}
                 >
                     <span className="movies-trending-carousel__media">
                         {activeBackdropUrl ? (
@@ -356,7 +498,7 @@ export default function TrendingTab({
                                     className="movies-trending-carousel__rating"
                                     style={{
                                         color: ratingColor(
-                                            activeRating
+                                            activeRating,
                                         ),
                                     }}
                                 >
@@ -371,15 +513,76 @@ export default function TrendingTab({
                             ) : null}
                         </span>
                         {activeGenres.length ? (
-                            <span className="movies-trending-carousel__genres">
-                                {activeGenres.map((g) => (
-                                    <span
-                                        key={g}
-                                        className="movies-trending-carousel__genre-pill"
+                            <span className="movies-trending-carousel__genres-row">
+                                <span className="movies-trending-carousel__genres">
+                                    {activeGenres.map(
+                                        (g) => (
+                                            <span
+                                                key={g}
+                                                className="movies-trending-carousel__genre-pill"
+                                            >
+                                                {g}
+                                            </span>
+                                        ),
+                                    )}
+                                </span>
+
+                                <span className="movies-trending-carousel__actions">
+                                    <button
+                                        type="button"
+                                        className={
+                                            isFavActive
+                                                ? "movies-trending-carousel__action movies-trending-carousel__action--favorite movies-trending-carousel__action--active"
+                                                : "movies-trending-carousel__action movies-trending-carousel__action--favorite"
+                                        }
+                                        aria-label="Toggle favorite"
+                                        aria-pressed={
+                                            isFavActive
+                                        }
+                                        disabled={
+                                            !canMutate ||
+                                            isFavoritePending
+                                        }
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            void toggleFavorite(
+                                                !isFavActive,
+                                            );
+                                        }}
                                     >
-                                        {g}
-                                    </span>
-                                ))}
+                                        <i
+                                            className="fa-solid fa-heart"
+                                            aria-hidden="true"
+                                        />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={
+                                            isWlActive
+                                                ? "movies-trending-carousel__action movies-trending-carousel__action--watchlist movies-trending-carousel__action--active"
+                                                : "movies-trending-carousel__action movies-trending-carousel__action--watchlist"
+                                        }
+                                        aria-label="Toggle watchlist"
+                                        aria-pressed={
+                                            isWlActive
+                                        }
+                                        disabled={
+                                            !canMutate ||
+                                            isWatchlistPending
+                                        }
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            void toggleWatchlist(
+                                                !isWlActive,
+                                            );
+                                        }}
+                                    >
+                                        <i
+                                            className="fa-solid fa-bookmark"
+                                            aria-hidden="true"
+                                        />
+                                    </button>
+                                </span>
                             </span>
                         ) : null}
                         {activeOverview ? (
@@ -388,7 +591,7 @@ export default function TrendingTab({
                             </span>
                         ) : null}
                     </span>
-                </button>
+                </div>
 
                 {status === "loading" &&
                 items.length === 0 ? (

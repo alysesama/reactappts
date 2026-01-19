@@ -50,10 +50,10 @@ function MoviesAppInner() {
         notify,
         close: closeNotif,
     } = useMoviesNotifications();
-    const lastLoginNotifiedAtRef = useRef<number | null>(
-        null
-    );
     const lastUserDataErrorRef = useRef<string>("");
+
+    const LOGIN_NOTIF_SIG_KEY =
+        "TMDB_LOGIN_SUCCESS_NOTIF_SIG_V1";
 
     const isLoggedIn =
         tmdbAuth.status === "ready" &&
@@ -72,27 +72,68 @@ function MoviesAppInner() {
         "favorite" | "watchlist"
     >("favorite");
 
+    const userListsCloseTimerRef = useRef<number | null>(
+        null,
+    );
+
+    const openUserLists = useCallback(() => {
+        if (userListsCloseTimerRef.current) {
+            window.clearTimeout(
+                userListsCloseTimerRef.current,
+            );
+            userListsCloseTimerRef.current = null;
+        }
+        setUserListsOpen(true);
+    }, []);
+
+    const scheduleCloseUserLists = useCallback(() => {
+        if (userListsCloseTimerRef.current) {
+            window.clearTimeout(
+                userListsCloseTimerRef.current,
+            );
+        }
+        userListsCloseTimerRef.current = window.setTimeout(
+            () => {
+                setUserListsOpen(false);
+                userListsCloseTimerRef.current = null;
+            },
+            120,
+        );
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (userListsCloseTimerRef.current) {
+                window.clearTimeout(
+                    userListsCloseTimerRef.current,
+                );
+                userListsCloseTimerRef.current = null;
+            }
+        };
+    }, []);
+
     useEffect(() => {
         if (!tmdbAuth.loginSuccessAt) return;
-        if (
-            lastLoginNotifiedAtRef.current ===
-            tmdbAuth.loginSuccessAt
-        )
-            return;
         const expiresAt = tmdbAuth.state?.expiresAt;
         if (!expiresAt) return;
+
+        const sig = `${tmdbAuth.user?.sessionId ?? ""}_${expiresAt}`;
+        const lastSig = sessionStorage.getItem(
+            LOGIN_NOTIF_SIG_KEY,
+        );
+        if (lastSig && lastSig === sig) return;
 
         notify({
             type: "good",
             message: `Login successfully, session expired at ${new Date(
-                expiresAt
+                expiresAt,
             ).toLocaleString()}`,
         });
-        lastLoginNotifiedAtRef.current =
-            tmdbAuth.loginSuccessAt;
+        sessionStorage.setItem(LOGIN_NOTIF_SIG_KEY, sig);
     }, [
         notify,
         tmdbAuth.loginSuccessAt,
+        tmdbAuth.user?.sessionId,
         tmdbAuth.state?.expiresAt,
     ]);
 
@@ -154,7 +195,7 @@ function MoviesAppInner() {
         return () => {
             window.removeEventListener(
                 "keydown",
-                onKeyDown
+                onKeyDown,
             );
         };
     }, [showResults, closeSearch]);
@@ -240,39 +281,71 @@ function MoviesAppInner() {
 
                     <div className="movies-shell__account">
                         {isLoggedIn ? (
-                            <button
-                                type="button"
-                                className="movies-account__lists"
-                                aria-label="User lists"
-                                onClick={() =>
-                                    setUserListsOpen(
-                                        (v) => !v
-                                    )
-                                }
-                            >
-                                <i
-                                    className="fa-solid fa-table-list"
-                                    aria-hidden="true"
-                                />
-                            </button>
-                        ) : null}
+                            <div className="movies-account__lists-wrap">
+                                <button
+                                    type="button"
+                                    className="movies-account__lists"
+                                    aria-label="User lists"
+                                    onMouseEnter={
+                                        openUserLists
+                                    }
+                                    onMouseLeave={
+                                        scheduleCloseUserLists
+                                    }
+                                    onFocus={openUserLists}
+                                >
+                                    <i
+                                        className="fa-solid fa-table-list"
+                                        aria-hidden="true"
+                                    />
+                                </button>
 
-                        <MoviesUserListsPanel
-                            open={
-                                isLoggedIn && userListsOpen
-                            }
-                            status={userLists.status}
-                            kind={userListsKind}
-                            items={
-                                userListsKind === "favorite"
-                                    ? userLists.favoriteAll
-                                    : userLists.watchlistAll
-                            }
-                            onClose={() =>
-                                setUserListsOpen(false)
-                            }
-                            onChangeKind={setUserListsKind}
-                        />
+                                <MoviesUserListsPanel
+                                    open={
+                                        isLoggedIn &&
+                                        userListsOpen
+                                    }
+                                    status={
+                                        userLists.status
+                                    }
+                                    kind={userListsKind}
+                                    items={
+                                        userListsKind ===
+                                        "favorite"
+                                            ? userLists.favoriteAll
+                                            : userLists.watchlistAll
+                                    }
+                                    onClose={() =>
+                                        setUserListsOpen(
+                                            false,
+                                        )
+                                    }
+                                    onChangeKind={
+                                        setUserListsKind
+                                    }
+                                    onPickMedia={(m: {
+                                        type:
+                                            | "movie"
+                                            | "tv";
+                                        id: number;
+                                    }) => {
+                                        setSelectedMedia({
+                                            type: m.type,
+                                            id: m.id,
+                                        });
+                                        setUserListsOpen(
+                                            false,
+                                        );
+                                    }}
+                                    onMouseEnter={
+                                        openUserLists
+                                    }
+                                    onMouseLeave={
+                                        scheduleCloseUserLists
+                                    }
+                                />
+                            </div>
+                        ) : null}
 
                         <TmdbUserButton
                             status={tmdbAuth.status}
@@ -303,6 +376,9 @@ function MoviesAppInner() {
                             onLogin={tmdbAuth.login}
                             onLogout={() => {
                                 setUserListsOpen(false);
+                                sessionStorage.removeItem(
+                                    LOGIN_NOTIF_SIG_KEY,
+                                );
                                 tmdbAuth.logout();
                             }}
                         />
@@ -314,16 +390,82 @@ function MoviesAppInner() {
                 <MovieSectionGroup variant="single">
                     <TrendingTab
                         onPickMovie={handlePickMovie}
+                        accountId={
+                            tmdbAuth.user?.accountId ?? ""
+                        }
+                        sessionId={
+                            tmdbAuth.user?.sessionId ?? ""
+                        }
+                        userListsStatus={userLists.status}
+                        isFavoriteMovie={
+                            userLists.isFavoriteMovie
+                        }
+                        isWatchlistMovie={
+                            userLists.isWatchlistMovie
+                        }
+                        setFavoriteMovieLocal={
+                            userLists.setFavoriteMovieLocal
+                        }
+                        setWatchlistMovieLocal={
+                            userLists.setWatchlistMovieLocal
+                        }
                     />
                 </MovieSectionGroup>
 
                 <MovieSectionGroup className="movies-section-group--section2">
-                    <PopularTab onPickTv={handlePickTv} />
+                    <PopularTab
+                        onPickTv={handlePickTv}
+                        accountId={
+                            tmdbAuth.user?.accountId ?? ""
+                        }
+                        sessionId={
+                            tmdbAuth.user?.sessionId ?? ""
+                        }
+                        userListsStatus={userLists.status}
+                        isFavorite={userLists.isFavorite}
+                        isWatchlist={userLists.isWatchlist}
+                        setFavoriteLocal={
+                            userLists.setFavoriteLocal
+                        }
+                        setWatchlistLocal={
+                            userLists.setWatchlistLocal
+                        }
+                    />
                     <NowPlayingTab
                         onPickMovie={handlePickMovie}
+                        accountId={
+                            tmdbAuth.user?.accountId ?? ""
+                        }
+                        sessionId={
+                            tmdbAuth.user?.sessionId ?? ""
+                        }
+                        userListsStatus={userLists.status}
+                        isFavorite={userLists.isFavorite}
+                        isWatchlist={userLists.isWatchlist}
+                        setFavoriteLocal={
+                            userLists.setFavoriteLocal
+                        }
+                        setWatchlistLocal={
+                            userLists.setWatchlistLocal
+                        }
                     />
                     <UpcomingTab
                         onPickMovie={handlePickMovie}
+                        accountId={
+                            tmdbAuth.user?.accountId ?? ""
+                        }
+                        sessionId={
+                            tmdbAuth.user?.sessionId ?? ""
+                        }
+                        userListsStatus={userLists.status}
+                        isFavorite={userLists.isFavorite}
+                        isWatchlist={userLists.isWatchlist}
+                        setFavoriteLocal={
+                            userLists.setFavoriteLocal
+                        }
+                        setWatchlistLocal={
+                            userLists.setWatchlistLocal
+                        }
                     />
                 </MovieSectionGroup>
 
@@ -333,6 +475,21 @@ function MoviesAppInner() {
                             type === "movie"
                                 ? handlePickMovie(id)
                                 : handlePickTv(id)
+                        }
+                        accountId={
+                            tmdbAuth.user?.accountId ?? ""
+                        }
+                        sessionId={
+                            tmdbAuth.user?.sessionId ?? ""
+                        }
+                        userListsStatus={userLists.status}
+                        isFavorite={userLists.isFavorite}
+                        isWatchlist={userLists.isWatchlist}
+                        setFavoriteLocal={
+                            userLists.setFavoriteLocal
+                        }
+                        setWatchlistLocal={
+                            userLists.setWatchlistLocal
                         }
                     />
                 </MovieSectionGroup>

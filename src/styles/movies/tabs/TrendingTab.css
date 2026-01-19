@@ -147,6 +147,70 @@
     text-shadow: 0 2px 18px rgba(0, 0, 0, 0.7);
 }
 
+.movies-trending-carousel__genres-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.movies-trending-carousel__actions {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.movies-trending-carousel__action {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    border: 1px solid rgba(226, 232, 240, 0.18);
+    background: rgba(2, 6, 23, 0.32);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: rgba(226, 232, 240, 0.9);
+    cursor: pointer;
+    transition:
+        background 160ms ease,
+        border-color 160ms ease,
+        transform 160ms ease,
+        color 160ms ease;
+}
+
+.movies-trending-carousel__action:hover {
+    transform: translateY(-1px);
+    background: rgba(2, 6, 23, 0.42);
+}
+
+.movies-trending-carousel__action:focus-visible {
+    outline: 2px solid rgba(59, 130, 246, 0.45);
+    outline-offset: 2px;
+}
+
+.movies-trending-carousel__action:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.movies-trending-carousel__action--active {
+    border-color: rgba(226, 232, 240, 0.32);
+}
+
+.movies-trending-carousel__action--favorite.movies-trending-carousel__action--active {
+    background: rgba(239, 68, 68, 0.22);
+    border-color: rgba(239, 68, 68, 0.40);
+    color: rgba(255, 255, 255, 0.96);
+}
+
+.movies-trending-carousel__action--watchlist.movies-trending-carousel__action--active {
+    background: rgba(59, 130, 246, 0.22);
+    border-color: rgba(59, 130, 246, 0.40);
+    color: rgba(255, 255, 255, 0.96);
+}
+
 .movies-trending-carousel__genre-pill {
     padding: 7px 12px;
     border-radius: 999px;

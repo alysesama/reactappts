@@ -161,6 +161,24 @@ export function useTmdbUserLists({
     const [watchlistMovies, setWatchlistMovies] = useState<UserListItem[]>([]);
     const [watchlistTv, setWatchlistTv] = useState<UserListItem[]>([]);
 
+    const favoriteMoviesRef = useRef<UserListItem[]>([]);
+    const favoriteTvRef = useRef<UserListItem[]>([]);
+    const watchlistMoviesRef = useRef<UserListItem[]>([]);
+    const watchlistTvRef = useRef<UserListItem[]>([]);
+
+    useEffect(() => {
+        favoriteMoviesRef.current = favoriteMovies;
+    }, [favoriteMovies]);
+    useEffect(() => {
+        favoriteTvRef.current = favoriteTv;
+    }, [favoriteTv]);
+    useEffect(() => {
+        watchlistMoviesRef.current = watchlistMovies;
+    }, [watchlistMovies]);
+    useEffect(() => {
+        watchlistTvRef.current = watchlistTv;
+    }, [watchlistTv]);
+
     const abortRef = useRef<AbortController | null>(null);
 
     const applyCacheIfAny = useCallback(() => {
@@ -263,6 +281,124 @@ export function useTmdbUserLists({
         [watchlistMovies, watchlistTv]
     );
 
+    const isFavorite = useCallback(
+        (mediaType: "movie" | "tv", id: number) => {
+            return mediaType === "movie"
+                ? favoriteMoviesRef.current.some((x) => x.id === id)
+                : favoriteTvRef.current.some((x) => x.id === id);
+        },
+        []
+    );
+
+    const isWatchlist = useCallback(
+        (mediaType: "movie" | "tv", id: number) => {
+            return mediaType === "movie"
+                ? watchlistMoviesRef.current.some((x) => x.id === id)
+                : watchlistTvRef.current.some((x) => x.id === id);
+        },
+        []
+    );
+
+    const isFavoriteMovie = useCallback(
+        (movieId: number) =>
+            favoriteMoviesRef.current.some((x) => x.id === movieId),
+        []
+    );
+
+    const isWatchlistMovie = useCallback(
+        (movieId: number) =>
+            watchlistMoviesRef.current.some((x) => x.id === movieId),
+        []
+    );
+
+    const setFavoriteLocal = useCallback(
+        (item: UserListItem, active: boolean) => {
+            if (item.mediaType === "movie") {
+                const prev = favoriteMoviesRef.current;
+                const next = active
+                    ? prev.some((x) => x.id === item.id)
+                        ? prev
+                        : [item, ...prev]
+                    : prev.filter((x) => x.id !== item.id);
+
+                favoriteMoviesRef.current = next;
+                setFavoriteMovies(next);
+            } else {
+                const prev = favoriteTvRef.current;
+                const next = active
+                    ? prev.some((x) => x.id === item.id)
+                        ? prev
+                        : [item, ...prev]
+                    : prev.filter((x) => x.id !== item.id);
+
+                favoriteTvRef.current = next;
+                setFavoriteTv(next);
+            }
+
+            if (accountId) {
+                writeCache(accountId, {
+                    updatedAt: Date.now(),
+                    favoriteMovies: favoriteMoviesRef.current,
+                    favoriteTv: favoriteTvRef.current,
+                    watchlistMovies: watchlistMoviesRef.current,
+                    watchlistTv: watchlistTvRef.current,
+                });
+            }
+        },
+        [accountId]
+    );
+
+    const setWatchlistLocal = useCallback(
+        (item: UserListItem, active: boolean) => {
+            if (item.mediaType === "movie") {
+                const prev = watchlistMoviesRef.current;
+                const next = active
+                    ? prev.some((x) => x.id === item.id)
+                        ? prev
+                        : [item, ...prev]
+                    : prev.filter((x) => x.id !== item.id);
+
+                watchlistMoviesRef.current = next;
+                setWatchlistMovies(next);
+            } else {
+                const prev = watchlistTvRef.current;
+                const next = active
+                    ? prev.some((x) => x.id === item.id)
+                        ? prev
+                        : [item, ...prev]
+                    : prev.filter((x) => x.id !== item.id);
+
+                watchlistTvRef.current = next;
+                setWatchlistTv(next);
+            }
+
+            if (accountId) {
+                writeCache(accountId, {
+                    updatedAt: Date.now(),
+                    favoriteMovies: favoriteMoviesRef.current,
+                    favoriteTv: favoriteTvRef.current,
+                    watchlistMovies: watchlistMoviesRef.current,
+                    watchlistTv: watchlistTvRef.current,
+                });
+            }
+        },
+        [accountId]
+    );
+
+    const setFavoriteMovieLocal = useCallback(
+        (item: UserListItem, active: boolean) => {
+            setFavoriteLocal(item, active);
+        },
+        [setFavoriteLocal]
+    );
+
+    const setWatchlistMovieLocal = useCallback(
+        (item: UserListItem, active: boolean) => {
+            setWatchlistLocal(item, active);
+        },
+        [setWatchlistLocal]
+    );
+
     return {
         status,
         error,
@@ -272,6 +408,14 @@ export function useTmdbUserLists({
         watchlistTv,
         favoriteAll,
         watchlistAll,
+        isFavorite,
+        isWatchlist,
+        isFavoriteMovie,
+        isWatchlistMovie,
+        setFavoriteLocal,
+        setWatchlistLocal,
+        setFavoriteMovieLocal,
+        setWatchlistMovieLocal,
         reload: load,
     };
 }

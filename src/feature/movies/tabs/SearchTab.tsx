@@ -14,6 +14,10 @@ import {
 } from "../hooks/useTmdbDiscoverSearch";
 import { useTmdbGenres } from "../hooks/useTmdbGenres";
 import { useTmdbTvGenres } from "../hooks/useTmdbTvGenres";
+import type {
+    UserListItem,
+    UserListsStatus,
+} from "../hooks/useTmdbUserLists";
 
 function todayIso() {
     const d = new Date();
@@ -121,11 +125,37 @@ function DualRange({
 
 export default function SearchTab({
     onPickMedia,
+    accountId,
+    sessionId,
+    userListsStatus,
+    isFavorite,
+    isWatchlist,
+    setFavoriteLocal,
+    setWatchlistLocal,
 }: {
     onPickMedia: (media: {
         type: "movie" | "tv";
         id: number;
     }) => void;
+    accountId: string;
+    sessionId: string;
+    userListsStatus: UserListsStatus;
+    isFavorite: (
+        mediaType: "movie" | "tv",
+        id: number,
+    ) => boolean;
+    isWatchlist: (
+        mediaType: "movie" | "tv",
+        id: number,
+    ) => boolean;
+    setFavoriteLocal: (
+        item: UserListItem,
+        active: boolean,
+    ) => void;
+    setWatchlistLocal: (
+        item: UserListItem,
+        active: boolean,
+    ) => void;
 }) {
     const {
         status: movieGenreStatus,
@@ -143,10 +173,10 @@ export default function SearchTab({
     } = useTmdbTvGenres();
 
     const [draft, setDraft] = useState<DiscoverFilters>(
-        DEFAULT_MOVIE_FILTERS
+        DEFAULT_MOVIE_FILTERS,
     );
     const [applied, setApplied] = useState<DiscoverFilters>(
-        DEFAULT_MOVIE_FILTERS
+        DEFAULT_MOVIE_FILTERS,
     );
 
     const [keywordInput, setKeywordInput] =
@@ -406,7 +436,7 @@ export default function SearchTab({
                             {activeGenreList.map((g) => {
                                 const isOn =
                                     draft.genreIds.includes(
-                                        g.id
+                                        g.id,
                                     );
                                 return (
                                     <button
@@ -422,7 +452,7 @@ export default function SearchTab({
                                                 (p) => {
                                                     const has =
                                                         p.genreIds.includes(
-                                                            g.id
+                                                            g.id,
                                                         );
                                                     return {
                                                         ...p,
@@ -430,17 +460,17 @@ export default function SearchTab({
                                                             has
                                                                 ? p.genreIds.filter(
                                                                       (
-                                                                          x
+                                                                          x,
                                                                       ) =>
                                                                           x !==
-                                                                          g.id
+                                                                          g.id,
                                                                   )
                                                                 : [
                                                                       ...p.genreIds,
                                                                       g.id,
                                                                   ],
                                                     };
-                                                }
+                                                },
                                             )
                                         }
                                     >
@@ -539,7 +569,7 @@ export default function SearchTab({
                                 valueMax={draft.ratingMax}
                                 onChange={(
                                     nextMin,
-                                    nextMax
+                                    nextMax,
                                 ) =>
                                     setDraft((p) => ({
                                         ...p,
@@ -568,7 +598,7 @@ export default function SearchTab({
                                 }
                                 onChange={(
                                     nextMin,
-                                    nextMax
+                                    nextMax,
                                 ) =>
                                     setDraft((p) => ({
                                         ...p,
@@ -609,9 +639,9 @@ export default function SearchTab({
                                     const genreId =
                                         it.genre_ids?.[0];
                                     const genre = genreId
-                                        ? activeGenreMap[
+                                        ? (activeGenreMap[
                                               genreId
-                                          ] ?? ""
+                                          ] ?? "")
                                         : "";
 
                                     return (
@@ -620,6 +650,12 @@ export default function SearchTab({
                                             className="mv-search__cell"
                                         >
                                             <MediaPosterOverlayCard
+                                                mediaType={
+                                                    it.mediaType
+                                                }
+                                                mediaId={
+                                                    it.id
+                                                }
                                                 title={
                                                     it.title
                                                 }
@@ -637,8 +673,29 @@ export default function SearchTab({
                                                         {
                                                             type: it.mediaType,
                                                             id: it.id,
-                                                        }
+                                                        },
                                                     )
+                                                }
+                                                accountId={
+                                                    accountId
+                                                }
+                                                sessionId={
+                                                    sessionId
+                                                }
+                                                userListsStatus={
+                                                    userListsStatus
+                                                }
+                                                isFavorite={
+                                                    isFavorite
+                                                }
+                                                isWatchlist={
+                                                    isWatchlist
+                                                }
+                                                setFavoriteLocal={
+                                                    setFavoriteLocal
+                                                }
+                                                setWatchlistLocal={
+                                                    setWatchlistLocal
                                                 }
                                             />
                                         </div>

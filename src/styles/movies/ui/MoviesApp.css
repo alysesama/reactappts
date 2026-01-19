@@ -119,6 +119,11 @@
     gap: 8px;
 }
 
+.movies-account__lists-wrap {
+    position: relative;
+    flex: 0 0 auto;
+}
+
 .movies-account__lists {
     width: 42px;
     height: 42px;

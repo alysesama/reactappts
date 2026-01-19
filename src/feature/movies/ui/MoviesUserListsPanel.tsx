@@ -1,4 +1,9 @@
-import { useEffect, useMemo, useRef } from "react";
+import {
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import "@/styles/movies/ui/MoviesUserListsPanel.css";
 import type {
     UserListItem,
@@ -18,6 +23,9 @@ export default function MoviesUserListsPanel({
     items,
     onClose,
     onChangeKind,
+    onPickMedia,
+    onMouseEnter,
+    onMouseLeave,
 }: {
     open: boolean;
     status: UserListsStatus;
@@ -25,43 +33,77 @@ export default function MoviesUserListsPanel({
     items: UserListItem[];
     onClose: () => void;
     onChangeKind: (kind: UserListKind) => void;
+    onPickMedia?: (m: {
+        type: "movie" | "tv";
+        id: number;
+    }) => void;
+    onMouseEnter?: () => void;
+    onMouseLeave?: () => void;
 }) {
     const rootRef = useRef<HTMLDivElement | null>(null);
+    const closeTimerRef = useRef<number | null>(null);
+    const effectTimerRef = useRef<number | null>(null);
+    const [rendered, setRendered] = useState(false);
+    const [phase, setPhase] = useState<
+        "opening" | "open" | "closing"
+    >("open");
 
     useEffect(() => {
-        if (!open) return;
+        if (effectTimerRef.current) {
+            window.clearTimeout(effectTimerRef.current);
+            effectTimerRef.current = null;
+        }
 
-        const onDocMouseDown = (e: MouseEvent) => {
-            const root = rootRef.current;
-            if (!root) return;
-            if (
-                e.target instanceof Node &&
-                root.contains(e.target)
-            )
-                return;
-            onClose();
-        };
+        if (closeTimerRef.current) {
+            window.clearTimeout(closeTimerRef.current);
+            closeTimerRef.current = null;
+        }
+
+        if (open) {
+            effectTimerRef.current = window.setTimeout(
+                () => {
+                    setRendered(true);
+                    setPhase("opening");
+                    window.requestAnimationFrame(() => {
+                        setPhase("open");
+                    });
+                    effectTimerRef.current = null;
+                },
+                0,
+            );
+            return;
+        }
+
+        if (!rendered) return;
+        effectTimerRef.current = window.setTimeout(() => {
+            setPhase("closing");
+            closeTimerRef.current = window.setTimeout(
+                () => {
+                    setRendered(false);
+                    setPhase("open");
+                    closeTimerRef.current = null;
+                },
+                160,
+            );
+            effectTimerRef.current = null;
+        }, 0);
+    }, [open, rendered]);
+
+    useEffect(() => {
+        if (!rendered || !open) return;
 
         const onKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") onClose();
         };
 
-        document.addEventListener(
-            "mousedown",
-            onDocMouseDown
-        );
         window.addEventListener("keydown", onKeyDown);
         return () => {
-            document.removeEventListener(
-                "mousedown",
-                onDocMouseDown
-            );
             window.removeEventListener(
                 "keydown",
-                onKeyDown
+                onKeyDown,
             );
         };
-    }, [onClose, open]);
+    }, [onClose, open, rendered]);
 
     const emptyText = useMemo(() => {
         if (status === "loading") return "Loading…";
@@ -69,13 +111,22 @@ export default function MoviesUserListsPanel({
         return "Empty.";
     }, [status]);
 
-    if (!open) return null;
+    if (!rendered) return null;
+
+    const className =
+        phase === "open"
+            ? "mv-userlists mv-userlists--open"
+            : phase === "closing"
+              ? "mv-userlists mv-userlists--closing"
+              : "mv-userlists";
 
     return (
         <div
-            className="mv-userlists"
+            className={className}
             ref={rootRef}
             role="dialog"
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
         >
             <div className="mv-userlists__nav">
                 <button
@@ -118,14 +169,21 @@ export default function MoviesUserListsPanel({
                         const posterUrl = it.poster_path
                             ? tmdbImageUrl(
                                   it.poster_path,
-                                  "w92"
+                                  "w92",
                               )
                             : "";
 
                         return (
-                            <div
+                            <button
+                                type="button"
                                 key={`${it.mediaType}_${it.id}`}
                                 className="mv-userlists__item"
+                                onClick={() =>
+                                    onPickMedia?.({
+                                        type: it.mediaType,
+                                        id: it.id,
+                                    })
+                                }
                             >
                                 <div className="mv-userlists__thumb">
                                     {posterUrl ? (
@@ -153,7 +211,7 @@ export default function MoviesUserListsPanel({
                                             : "TV"}
                                     </div>
                                 </div>
-                            </div>
+                            </button>
                         );
                     })
                 )}

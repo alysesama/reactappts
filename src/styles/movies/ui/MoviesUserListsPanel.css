@@ -1,6 +1,6 @@
 .mv-userlists {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 6px);
     right: 0;
     z-index: 120;
     width: min(520px, calc(100vw - 16px));
@@ -8,24 +8,41 @@
     overflow: hidden;
     background: var(--mv-panel-strong);
     border: 1px solid var(--mv-border-strong);
-    border-radius: var(--mv-radius-md);
+    border-radius: none;
     box-shadow: 0 22px 60px rgba(0, 0, 0, 0.55);
     display: grid;
     grid-template-rows: auto 1fr;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition:
+        opacity 0.14s ease,
+        transform 0.14s ease;
+    pointer-events: none;
+}
+
+.mv-userlists--open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.mv-userlists--closing {
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
 }
 
 .mv-userlists__nav {
-    display: flex;
-    gap: 8px;
-    padding: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     border-bottom: 1px solid rgba(148, 163, 184, 0.16);
 }
 
 .mv-userlists__tab {
-    height: 30px;
+    height: 40px;
     padding: 0 12px;
-    border-radius: 999px;
-    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: none;
+    border: none;
     background: rgba(148, 163, 184, 0.08);
     color: var(--mv-text);
     font-family: var(--mv-font-ui);
@@ -35,14 +52,11 @@
 
 .mv-userlists__tab--active {
     background: rgba(59, 130, 246, 0.18);
-    border-color: rgba(59, 130, 246, 0.28);
 }
 
 .mv-userlists__list {
     overflow: auto;
-    padding: 8px;
     display: grid;
-    gap: 8px;
 }
 
 .mv-userlists__empty {
@@ -52,22 +66,33 @@
 }
 
 .mv-userlists__item {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
     display: grid;
-    grid-template-columns: 44px 1fr;
-    gap: 10px;
+    grid-template-columns: 72px 1fr;
+    gap: 16px;
     align-items: center;
-    padding: 8px;
-    border-radius: 12px;
-    border: 1px solid rgba(148, 163, 184, 0.14);
+    border: none;
     background: rgba(148, 163, 184, 0.06);
+    cursor: pointer;
+    text-align: left;
+}
+
+.mv-userlists__item:hover {
+    background: rgba(59, 130, 246, 0.12);
+}
+
+.mv-userlists__item:focus-visible {
+    outline: 2px solid rgba(59, 130, 246, 0.45);
+    outline-offset: 2px;
 }
 
 .mv-userlists__thumb {
-    width: 44px;
+    width: 100%;
     aspect-ratio: 2 / 3;
-    border-radius: 10px;
     overflow: hidden;
-    border: 1px solid rgba(148, 163, 184, 0.18);
+    border: none;
     background: rgba(148, 163, 184, 0.06);
     display: grid;
     place-items: center;
@@ -88,8 +113,9 @@
 }
 
 .mv-userlists__title {
-    font-family: var(--mv-font-ui);
-    font-weight: 800;
+    font-family: var(--mv-font-display);
+    font-size: 1.5rem;
+    font-weight: 500;
     color: var(--mv-text);
     overflow: hidden;
     text-overflow: ellipsis;
