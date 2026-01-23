@@ -1,5 +1,5 @@
 
-# reactappts (feat666)
+# reactappts (staging####)
 
 Ứng dụng React + TypeScript (Vite) dạng “multi mini-app” chạy trong một shell chung, điều hướng bằng `react-router-dom` (dùng `HashRouter` để tương thích deploy static/GitHub Pages).
 
