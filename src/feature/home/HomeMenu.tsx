@@ -8,7 +8,7 @@ export default function HomeMenu() {
     );
 
     return (
-        <section className="home-menu test">
+        <section className="home-menu test1">
             <div className="home-menu__grid">
                 {pages.map((p) => {
                     const to = `/${getPagePath(p)}`;
