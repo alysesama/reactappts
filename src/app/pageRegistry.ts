@@ -42,4 +42,10 @@ export const APP_PAGES: AppPage[] = [
     iconClass: 'fa-brands fa-github',
     description: 'Tìm user và repo trên GitHub',
   },
+  {
+    name: 'Dummy',
+    link: 'DummyPage',
+    iconClass: 'fa-solid fa-flask',
+    description: 'Sandbox training page',
+  },
 ]
