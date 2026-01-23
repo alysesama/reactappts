@@ -27,5 +27,6 @@ dist-ssr
 *.sw?
 
 # 
+.ssh/
 legacy/
 env/
