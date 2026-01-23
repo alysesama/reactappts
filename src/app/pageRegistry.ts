@@ -46,6 +46,6 @@ export const APP_PAGES: AppPage[] = [
     name: 'Dummy',
     link: 'DummyPage',
     iconClass: 'fa-solid fa-flask',
-    description: 'Sandbox training page with staging',
+    description: 'Sandbox training page 666',
   },
 ]
