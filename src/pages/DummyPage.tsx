@@ -3,14 +3,11 @@ import DummyApp from "@/feature/dummy/DummyApp";
 export default function DummyPage() {
     return (
         <>
+            {/* 666 edit */}
             <DummyApp />
-            {/* staging */}
             <DummyApp />
-            {/* staging */}
             <DummyApp />
-            {/* staging */}
-            <DummyApp />
-            {/* staging */}
+            {/* edit 666 */}
         </>
     );
 }
