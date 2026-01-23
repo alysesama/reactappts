@@ -31,6 +31,12 @@ export const APP_PAGES: AppPage[] = [
     description: 'Tương tác với TMDB',
   },
   {
+    name: 'MSR',
+    link: 'MSRPage',
+    iconClass: 'fa-solid fa-music',
+    description: 'Monster Siren Records',
+  },
+  {
     name: 'Todo App',
     link: 'TodoAppPage',
     iconClass: 'fa-solid fa-clipboard-list',
