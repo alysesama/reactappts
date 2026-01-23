@@ -48,7 +48,7 @@ Tạo file `env/.env` và khai báo các biến sau (không commit key thật l�
 - **`VITE_OPENWEATHER_API_KEY`**: dùng cho feature Weather (OpenWeather)
 - **`VITE_TMDB_READ_ACCESS_TOKEN`** *(khuyến nghị)*: TMDB Read Access Token (Bearer)
 - **`VITE_TMDB_API_KEY`** *(fallback)*: TMDB API Key (query param)
-
+Test
 Lưu ý:
 
 - **TMDB auth**: code sẽ ưu tiên `VITE_TMDB_READ_ACCESS_TOKEN`. Nếu token trống thì mới dùng `VITE_TMDB_API_KEY`.
@@ -83,3 +83,4 @@ src/
 
 index.html              # load /src/main.tsx
 ```
+
