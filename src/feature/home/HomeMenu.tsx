@@ -4,11 +4,11 @@ import "@/styles/home/HomeMenu.css";
 
 export default function HomeMenu() {
     const pages = APP_PAGES.filter(
-        (p) => p.link !== "HomePage"
+        (p) => p.link !== "HomePage",
     );
 
     return (
-        <section className="home-menu">
+        <section className="home-menu test">
             <div className="home-menu__grid">
                 {pages.map((p) => {
                     const to = `/${getPagePath(p)}`;
